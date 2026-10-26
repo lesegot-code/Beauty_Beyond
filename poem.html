@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#5c0f1f">
+  <title>For You ♡</title>
+
+  <style>
+    :root {
+      --wine: #5c0f1f;
+      --wine-deep: #2a050c;
+      --wine-light: #7d1a2c;
+      --rose: #c9415f;
+      --rose-bright: #ff6b8a;
+      --rose-soft: #f4c5ce;
+      --cream: #fdf4ee;
+      --cream-warm: #f8e8de;
+      --ink: #3a1218;
+      --muted: #8a5a62;
+      --gold: #d9a85f;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      min-height: 100%;
+      margin: 0;
+    }
+
+    /* ============================================================
+       BACKGROUND — layered living rose field
+       ============================================================ */
+    body {
+      color: var(--cream);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      overflow-y: auto;
+      position: relative;
+      background: var(--wine-deep);
+    }
+
+    /* Layer 1: deep warm gradient base */
+    .bg-base {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 90% 70% at 50% -10%, rgba(201, 65, 95, 0.45), transparent 60%),
+        radial-gradient(ellipse 80% 60% at 50% 110%, rgba(125, 26, 44, 0.65), transparent 60%),
+        linear-gradient(180deg, var(--wine-deep) 0%, var(--wine) 45%, var(--wine-deep) 100%);
+    }
+
+    /* Layer 2: soft breathing light orbs (very slow) */
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: 0.55;
+      will-change: transform;
+    }
+    .orb.a {
+      width: 480px; height: 480px;
+      top: -10%; left: -10%;
+      background: radial-gradient(circle, rgba(232, 90, 120, 0.7), transparent 70%);
+      animation: driftA 26s ease-in-out infinite alternate;
+    }
+    .orb.b {
+      width: 420px; height: 420px;
+      bottom: -12%; right: -10%;
+      background: radial-gradient(circle, rgba(201, 65, 95, 0.7), transparent 70%);
+      animation: driftB 32s ease-in-out infinite alternate;
+    }
+    .orb.c {
+      width: 340px; height: 340px;
+      top: 40%; left: 55%;
+      background: radial-gradient(circle, rgba(255, 107, 138, 0.55), transparent 70%);
+      animation: driftC 38s ease-in-out infinite alternate;
+    }
+    @keyframes driftA {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(80px, 60px) scale(1.15); }
+    }
+    @keyframes driftB {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-90px, -50px) scale(1.1); }
+    }
+    @keyframes driftC {
+      0%   { transform: translate(0, 0) scale(0.9); }
+      100% { transform: translate(-60px, 40px) scale(1.2); }
+    }
+
+    /* Layer 3: soft rose pattern (faint, static) */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(244, 197, 206, 0.06) 0, transparent 12%),
+        radial-gradient(circle at 85% 30%, rgba(244, 197, 206, 0.05) 0, transparent 10%),
+        radial-gradient(circle at 30% 80%, rgba(244, 197, 206, 0.06) 0, transparent 14%),
+        radial-gradient(circle at 70% 85%, rgba(244, 197, 206, 0.05) 0, transparent 11%),
+        radial-gradient(circle at 50% 50%, rgba(244, 197, 206, 0.03) 0, transparent 30%);
+      z-index: 0;
+    }
+
+    /* Layer 4: vignette */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, transparent 45%, rgba(0, 0, 0, 0.55) 100%);
+      z-index: 4;
+    }
+
+    /* ============================================================
+       PETALS — layered depth: far (small, slow, blurry), near (big, sharp)
+       ============================================================ */
+    .petals {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 2;
+    }
+    .petal {
+      position: absolute;
+      top: -60px;
+      border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
+      transform-origin: center;
+      animation: fall linear infinite;
+      will-change: transform;
+    }
+    .petal.far {
+      background: radial-gradient(circle at 30% 30%, #d4536d, #8e2c42 70%);
+      opacity: 0.55;
+      filter: blur(1.5px);
+      box-shadow: 0 0 5px rgba(232, 90, 120, 0.25);
+    }
+    .petal.mid {
+      background: radial-gradient(circle at 30% 30%, var(--rose-bright), var(--rose) 60%, #8e2c42 100%);
+      opacity: 0.8;
+      box-shadow: 0 0 8px rgba(232, 90, 120, 0.4);
+    }
+    .petal.near {
+      background: radial-gradient(circle at 30% 30%, #ff90a8, var(--rose-bright) 55%, var(--rose) 100%);
+      opacity: 0.95;
+      filter: blur(0.3px);
+      box-shadow: 0 0 14px rgba(255, 107, 138, 0.6);
+    }
+
+    @keyframes fall {
+      0%   { transform: translate3d(0, -60px, 0) rotate(0deg); opacity: 0; }
+      8%   { opacity: 1; }
+      50%  { transform: translate3d(var(--drift, 30px), 55vh, 0) rotate(180deg); }
+      92%  { opacity: 1; }
+      100% { transform: translate3d(calc(var(--drift, 30px) * -0.6), 108vh, 0) rotate(360deg); opacity: 0; }
+    }
+
+    /* ============================================================
+       PAGE
+       ============================================================ */
+    .page {
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(20px, 4vw, 48px);
+      position: relative;
+      z-index: 3;
+    }
+
+    .card-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 640px;
+    }
+
+    /* glowing halo behind the card — a warm rose bloom */
+    .card-wrap::before {
+      content: "";
+      position: absolute;
+      inset: -50px;
+      background:
+        radial-gradient(ellipse at center, rgba(255, 107, 138, 0.45), transparent 65%);
+      filter: blur(45px);
+      z-index: -1;
+      border-radius: 50%;
+      animation: breathe 8s ease-in-out infinite alternate;
+    }
+    @keyframes breathe {
+      0%   { opacity: 0.7; transform: scale(1); }
+      100% { opacity: 1;   transform: scale(1.06); }
+    }
+
+    /* ============================================================
+       CARD — frosted glass
+       ============================================================ */
+    .poem-card {
+      position: relative;
+      width: 100%;
+      text-align: center;
+      padding: clamp(30px, 5.5vw, 54px) clamp(22px, 5vw, 48px);
+      border-radius: 26px;
+      color: var(--ink);
+
+      /* translucent cream surface */
+      background:
+        linear-gradient(180deg,
+          rgba(253, 244, 238, 0.72) 0%,
+          rgba(248, 232, 222, 0.62) 100%);
+
+      /* the glass part */
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+
+      /* light border + inner highlight + soft outer shadow + gold rim */
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.7) inset,
+        0 -1px 0 rgba(255, 255, 255, 0.25) inset,
+        0 30px 80px -20px rgba(0, 0, 0, 0.65),
+        0 0 0 1px rgba(217, 168, 95, 0.35),
+        0 0 60px rgba(255, 107, 138, 0.15);
+
+      animation: appear 1.3s cubic-bezier(.2,.7,.3,1) both;
+      overflow: hidden;
+    }
+
+    /* subtle top sheen on the glass */
+    .poem-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 40%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent);
+      pointer-events: none;
+      border-radius: 26px 26px 0 0;
+    }
+
+    /* gold corner flourishes */
+    .poem-card::after {
+      content: "";
+      position: absolute;
+      top: 14px; left: 14px;
+      width: 46px; height: 46px;
+      border: 1.5px solid var(--gold);
+      border-right: none; border-bottom: none;
+      border-top-left-radius: 12px;
+      opacity: 0.65;
+      pointer-events: none;
+    }
+    .poem-card .corner-br {
+      position: absolute;
+      bottom: 14px; right: 14px;
+      width: 46px; height: 46px;
+      border: 1.5px solid var(--gold);
+      border-left: none; border-top: none;
+      border-bottom-right-radius: 12px;
+      opacity: 0.65;
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--rose);
+      font-size: 0.72rem;
+      letter-spacing: 0.28em;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin: 0 0 18px;
+      position: relative;
+      z-index: 1;
+    }
+    .eyebrow::before, .eyebrow::after {
+      content: "✦";
+      font-size: 0.78rem;
+      color: var(--gold);
+      opacity: 0.85;
+    }
+
+    .rose-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 0 16px;
+      font-size: 1.9rem;
+      line-height: 1;
+      filter: drop-shadow(0 3px 8px rgba(201, 65, 95, 0.4));
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 6vw, 3rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.12;
+      color: var(--wine);
+      margin: 0 0 10px;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .poem-sub {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      color: var(--muted);
+      font-size: clamp(0.95rem, 2.4vw, 1.08rem);
+      margin: 0 0 24px;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+
+    .poem-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--rose-soft);
+      font-size: 0.85rem;
+      margin: 0 auto 26px;
+      opacity: 0.95;
+      position: relative;
+      z-index: 1;
+    }
+    .poem-divider::before, .poem-divider::after {
+      content: "";
+      width: 46px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--rose), transparent);
+    }
+    .poem-divider .rose {
+      color: var(--rose);
+      font-size: 1rem;
+    }
+
+    .poem-body {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1rem, 2.4vw, 1.12rem);
+      line-height: 1.85;
+      color: var(--ink);
+      text-align: left;
+      max-width: 500px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+
+    .poem-body .stanza {
+      margin: 0 0 1.4em;
+      padding: 0;
+    }
+    .poem-body .stanza:last-of-type { margin-bottom: 0; }
+
+    .poem-body .line {
+      display: block;
+      margin: 0;
+    }
+
+    .poem-body .stanza-rule {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 0 auto 1.4em;
+      color: var(--rose-soft);
+      opacity: 0.7;
+    }
+    .poem-body .stanza-rule::before,
+    .poem-body .stanza-rule::after {
+      content: "";
+      flex: 1;
+      max-width: 120px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--rose-soft), transparent);
+    }
+    .poem-body .stanza-rule .orn {
+      color: var(--rose);
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+    .poem-body .stanza-rule:last-of-type { display: none; }
+
+    .poem-body .tswana {
+      color: var(--rose);
+      font-style: italic;
+    }
+
+    .poem-signature {
+      margin-top: 34px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(201, 65, 95, 0.25);
+      position: relative;
+      z-index: 1;
+    }
+    .poem-signature::before {
+      content: "❦";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--rose-soft);
+      padding: 0 12px;
+      color: var(--rose);
+      font-size: 1rem;
+      border-radius: 4px;
+    }
+    .poem-signature .line {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      color: var(--wine);
+      font-size: clamp(1rem, 2.4vw, 1.15rem);
+      margin: 0;
+    }
+    .poem-signature .heart {
+      display: inline-block;
+      margin-top: 10px;
+      color: var(--rose);
+      font-size: 1.3rem;
+      animation: heartbeat 1.8s ease-in-out infinite;
+      filter: drop-shadow(0 2px 6px rgba(255, 107, 138, 0.5));
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15%      { transform: scale(1.15); }
+      30%      { transform: scale(1); }
+      45%      { transform: scale(1.1); }
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(18px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @media (max-width: 480px) {
+      .page { padding: 16px; }
+      .poem-card {
+        border-radius: 20px;
+        padding: 28px 20px;
+        backdrop-filter: blur(14px) saturate(140%);
+        -webkit-backdrop-filter: blur(14px) saturate(140%);
+      }
+      .poem-card::after { width: 32px; height: 32px; }
+      .poem-card .corner-br { width: 32px; height: 32px; }
+      .orb.a, .orb.b, .orb.c { filter: blur(50px); opacity: 0.45; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .petal { display: none; }
+      .orb { animation: none; }
+      .card-wrap::before { animation: none; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-base" aria-hidden="true"></div>
+  <div class="bg-orbs" aria-hidden="true">
+    <span class="orb a"></span>
+    <span class="orb b"></span>
+    <span class="orb c"></span>
+  </div>
+  <div class="petals" id="petals" aria-hidden="true"></div>
+
+  <main class="page">
+    <div class="card-wrap">
+      <article class="poem-card">
+
+        <div class="corner-br" aria-hidden="true"></div>
+
+        <div class="eyebrow">For you</div>
+        <div class="rose-icon" aria-hidden="true">🌹</div>
+
+        <h1>A Beauty Beyond Compare</h1>
+        <p class="poem-sub">A birthday wish, inspired by William Shakespeare</p>
+
+        <div class="poem-divider" aria-hidden="true">
+          <span class="rose">✿</span>
+        </div>
+
+        <div class="poem-body">
+
+          <p class="stanza">
+            <span class="line">Your eyes need not outshine the morning sun,</span>
+            <span class="line">Nor must your smile make roses fade away;</span>
+            <span class="line">For beauty needs no contest to be won,</span>
+            <span class="line">Nor borrowed stars to brighten up the day.</span>
+          </p>
+          <div class="stanza-rule" aria-hidden="true"><span class="orn">✿</span></div>
+
+          <p class="stanza">
+            <span class="line">I've yet to solve the mystery in your gaze,</span>
+            <span class="line">That quiet look that leaves me wondering still;</span>
+            <span class="line">Some charms are best admired without a phrase,</span>
+            <span class="line">And some leave warmth no words can quite fulfil.</span>
+          </p>
+          <div class="stanza-rule" aria-hidden="true"><span class="orn">✿</span></div>
+
+          <p class="stanza">
+            <span class="line">Your gentle voice turns simple words to gold,</span>
+            <span class="line"><span class="tswana">"Ke siame, o jang?"</span> — I love that sound;</span>
+            <span class="line">For sweetest things need neither fame nor gold,</span>
+            <span class="line">But leave a little joy wherever they're found.</span>
+          </p>
+          <div class="stanza-rule" aria-hidden="true"><span class="orn">✿</span></div>
+
+          <p class="stanza">
+            <span class="line">And though I know you not in every way,</span>
+            <span class="line">There's something lovely in your quiet grace;</span>
+            <span class="line">A charm that needs no grand words of display,</span>
+            <span class="line">A light that shines without seeking its place.</span>
+          </p>
+          <div class="stanza-rule" aria-hidden="true"><span class="orn">✿</span></div>
+
+          <p class="stanza">
+            <span class="line">So may this day bring laughter, joy, and light,</span>
+            <span class="line">And fill your heart with memories to treasure;</span>
+            <span class="line">May dreams that once seemed distant come in sight,</span>
+            <span class="line">And may your days be rich with simple pleasure.</span>
+          </p>
+          <div class="stanza-rule" aria-hidden="true"><span class="orn">✿</span></div>
+
+          <p class="stanza">
+            <span class="line">May fortune smile upon the paths you choose,</span>
+            <span class="line">May hope remain when skies are painted grey;</span>
+            <span class="line">May life bring more than you could dare to lose,</span>
+            <span class="line">And give you brighter reasons every day.</span>
+          </p>
+          <div class="stanza-rule" aria-hidden="true"><span class="orn">✿</span></div>
+
+          <p class="stanza">
+            <span class="line">I need no stars to tell me you are rare,</span>
+            <span class="line">Nor roses dressed in words of grand acclaim;</span>
+            <span class="line">For there's a quiet beauty in your air,</span>
+            <span class="line">That makes you lovely without praise or fame.</span>
+          </p>
+          <div class="stanza-rule" aria-hidden="true"><span class="orn">✿</span></div>
+
+          <p class="stanza">
+            <span class="line">So here's to you, and all that lies ahead,</span>
+            <span class="line">To joys unseen and dreams yet to pursue;</span>
+            <span class="line">May kindness crown each path on which you tread,</span>
+            <span class="line">And may the coming year be good to you.</span>
+          </p>
+
+        </div>
+
+        <div class="poem-signature">
+          <p class="line">Happy birthday.</p>
+          <span class="heart" aria-hidden="true">♡</span>
+        </div>
+
+      </article>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      const layer = document.getElementById("petals");
+      const w = window.innerWidth;
+
+      // 3 depth layers: far (small/blurry/slow), mid, near (big/sharp/fast)
+      const layers = [
+        { cls: "far",  count: w < 600 ? 8  : 14, sizeMin: 6,  sizeMax: 10, durMin: 14, durMax: 22 },
+        { cls: "mid",  count: w < 600 ? 6  : 10, sizeMin: 10, sizeMax: 16, durMin: 10, durMax: 16 },
+        { cls: "near", count: w < 600 ? 4  : 7,  sizeMin: 16, sizeMax: 24, durMin: 7,  durMax: 12 }
+      ];
+
+      layers.forEach(layer_def => {
+        for (let i = 0; i < layer_def.count; i++) {
+          const p = document.createElement("span");
+          p.className = `petal ${layer_def.cls}`;
+
+          const size = layer_def.sizeMin + Math.random() * (layer_def.sizeMax - layer_def.sizeMin);
+          const left = Math.random() * 100;
+          const dur  = layer_def.durMin + Math.random() * (layer_def.durMax - layer_def.durMin);
+          const delay = -Math.random() * dur;
+          const drift = (Math.random() - 0.5) * 120;
+
+          p.style.width  = size + "px";
+          p.style.height = size + "px";
+          p.style.left   = left + "vw";
+          p.style.animationDuration = dur + "s";
+          p.style.animationDelay    = delay + "s";
+          p.style.setProperty("--drift", drift + "px");
+
+          layer.appendChild(p);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

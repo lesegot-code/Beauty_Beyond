@@ -1,5 +1,5 @@
 # A Beauty Beyond Compare
-<small>A birthday wish, inspired by Shakespeare</small>
+<small>A birthday wish, inspired by William Shakespeare</small>
 
 ---
 Your eyes need not outshine the morning sun,
