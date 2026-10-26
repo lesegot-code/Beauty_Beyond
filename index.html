@@ -2,52 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#fbf4ed">
   <title>A Beauty Beyond Compare ♡</title>
 
   <style>
     :root {
       --cream: #fbf4ed;
+      --cream-deep: #f6e9df;
       --blush: #f3dfdc;
       --rose: #b34f61;
       --rose-dark: #8e3548;
+      --rose-bright: #e85a78;
       --rose-soft: #d9afb0;
+      --gold: #c9a25f;
+      --gold-soft: #e8d2a6;
       --text: #583b3e;
+      --text-deep: #3a1f24;
       --muted: #977778;
-      --white: #fffaf6;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    /* ---------- No scrolling: lock the page to the viewport ---------- */
-
-    html,
-    body {
+    html, body {
       height: 100%;
-      overflow: hidden;
       margin: 0;
+      padding: 0;
+      overflow: hidden;
     }
 
     body {
       background:
-        radial-gradient(
-          ellipse 60% 50% at 12% 12%,
-          rgba(241, 207, 205, 0.55),
-          transparent 70%
-        ),
-        radial-gradient(
-          ellipse 55% 50% at 90% 88%,
-          rgba(235, 202, 194, 0.45),
-          transparent 70%
-        ),
-        var(--cream);
+        radial-gradient(ellipse 70% 60% at 12% 10%, rgba(241, 207, 205, 0.65), transparent 65%),
+        radial-gradient(ellipse 65% 60% at 88% 90%, rgba(235, 202, 194, 0.55), transparent 65%),
+        radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 245, 235, 0.6), transparent 70%),
+        linear-gradient(180deg, #fdf6f0 0%, var(--cream) 50%, var(--cream-deep) 100%);
       color: var(--text);
       font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
       -webkit-tap-highlight-color: transparent;
       -webkit-font-smoothing: antialiased;
+      position: relative;
     }
 
     body::before {
@@ -55,134 +49,240 @@
       position: fixed;
       inset: 0;
       pointer-events: none;
-      background: radial-gradient(
-        circle at 50% 50%,
-        transparent 55%,
-        rgba(111, 65, 66, 0.06) 100%
-      );
-      z-index: 2;
+      background: radial-gradient(circle at 50% 50%, transparent 55%, rgba(139, 90, 95, 0.10) 100%);
+      z-index: 1;
     }
 
-    button {
-      font: inherit;
+    /* ---------- final fade toward black before redirect ---------- */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: #0d0b0d;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+      /* slowed to 4.5s so the dim is genuinely gradual */
+      transition: opacity 4.5s ease-in-out;
+    }
+    body.fade-out::after {
+      opacity: 0.92;
     }
 
+    /* ---------- ambient background ---------- */
+    .bg-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.75;
+    }
+    .bg-orb.a {
+      width: 520px; height: 520px;
+      top: -10%; left: -12%;
+      background: radial-gradient(circle, rgba(232, 90, 120, 0.35), transparent 70%);
+      animation: driftA 22s ease-in-out infinite alternate;
+    }
+    .bg-orb.b {
+      width: 460px; height: 460px;
+      bottom: -12%; right: -10%;
+      background: radial-gradient(circle, rgba(201, 162, 95, 0.28), transparent 70%);
+      animation: driftB 26s ease-in-out infinite alternate;
+    }
+    @keyframes driftA {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(60px, 40px) scale(1.12); }
+    }
+    @keyframes driftB {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-50px, -30px) scale(1.1); }
+    }
+
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .heart {
+      position: absolute;
+      color: rgba(179, 79, 97, 0.20);
+      user-select: none;
+      animation: heartFloat linear infinite;
+      will-change: transform;
+    }
+    @keyframes heartFloat {
+      0%   { transform: translateY(20vh) rotate(-8deg); opacity: 0; }
+      15%  { opacity: 1; }
+      85%  { opacity: 1; }
+      100% { transform: translateY(-110vh) rotate(12deg); opacity: 0; }
+    }
+
+    .petals {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .petal {
+      position: absolute;
+      top: -30px;
+      border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(232, 90, 120, 0.55), rgba(179, 79, 97, 0.35) 70%);
+      opacity: 0.5;
+      animation: petalFall linear infinite;
+      will-change: transform;
+    }
+    @keyframes petalFall {
+      0%   { transform: translate3d(0, -30px, 0) rotate(0); opacity: 0; }
+      10%  { opacity: 0.55; }
+      50%  { transform: translate3d(25px, 55vh, 0) rotate(180deg); }
+      90%  { opacity: 0.45; }
+      100% { transform: translate3d(-15px, 110vh, 0) rotate(360deg); opacity: 0; }
+    }
+
+    /* ---------- layout ---------- */
     .page {
-      height: 100%;
-      height: 100svh;
+      height: 100vh;
+      height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: clamp(14px, 3vw, 40px);
+      padding:
+        max(10px, env(safe-area-inset-top, 0px))
+        max(10px, env(safe-area-inset-right, 0px))
+        max(10px, env(safe-area-inset-bottom, 0px))
+        max(10px, env(safe-area-inset-left, 0px));
       position: relative;
-      isolation: isolate;
+      z-index: 2;
       overflow: hidden;
     }
 
-    .decoration {
-      position: absolute;
-      z-index: 0;
-      color: rgba(179, 79, 97, 0.16);
-      pointer-events: none;
-      user-select: none;
-    }
-
-    .heart-one {
-      top: 10%;
-      left: 8%;
-      font-size: 30px;
-      animation: float 5s ease-in-out infinite;
-    }
-
-    .heart-two {
-      top: 20%;
-      right: 10%;
-      font-size: 20px;
-      animation: float 6s ease-in-out infinite reverse;
-    }
-
-    .heart-three {
-      bottom: 14%;
-      left: 14%;
-      font-size: 22px;
-      animation: float 5.5s ease-in-out infinite;
-    }
-
-    .heart-four {
-      bottom: 18%;
-      right: 8%;
-      font-size: 32px;
-      animation: float 6.5s ease-in-out infinite reverse;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 540px;
-      text-align: center;
-      padding: clamp(26px, 5vw, 46px) clamp(20px, 4.5vw, 40px) clamp(22px, 4vw, 36px);
-      background: linear-gradient(
-        180deg,
-        rgba(255, 250, 246, 0.94),
-        rgba(255, 248, 242, 0.88)
-      );
-      border: 1px solid rgba(179, 79, 97, 0.14);
-      border-radius: 26px;
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.7) inset,
-        0 26px 60px -20px rgba(111, 65, 66, 0.22),
-        0 10px 24px -12px rgba(111, 65, 66, 0.12);
-      animation: appear 0.9s cubic-bezier(.2, .7, .3, 1) both;
+    .card-wrap {
       position: relative;
-      z-index: 3;
+      width: 100%;
+      max-width: 520px;
+      max-height: 100%;
+    }
+    .card-wrap::before {
+      content: "";
+      position: absolute;
+      inset: -20px;
+      background: radial-gradient(ellipse at center, rgba(232, 90, 120, 0.18), transparent 65%);
+      filter: blur(28px);
+      z-index: -1;
+      border-radius: 50%;
+      animation: breathe 8s ease-in-out infinite alternate;
+    }
+    @keyframes breathe {
+      0%   { opacity: 0.6; transform: scale(1); }
+      100% { opacity: 1;   transform: scale(1.04); }
     }
 
+    /* ---------- card ---------- */
+    .card {
+      position: relative;
+      width: 100%;
+      text-align: center;
+      padding: clamp(14px, 3.5vh, 40px) clamp(16px, 4vw, 36px) clamp(14px, 3vh, 30px);
+      background: linear-gradient(180deg, rgba(255, 252, 248, 0.94) 0%, rgba(253, 244, 238, 0.90) 100%);
+      border-radius: 22px;
+      border: 1px solid rgba(201, 162, 95, 0.35);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 -1px 0 rgba(201, 162, 95, 0.1) inset,
+        0 24px 60px -25px rgba(111, 65, 66, 0.28),
+        0 8px 20px -10px rgba(111, 65, 66, 0.14),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+      animation: cardIn 1s cubic-bezier(.2,.7,.3,1) both;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border: 1px solid rgba(201, 162, 95, 0.35);
+      border-radius: 16px;
+      pointer-events: none;
+    }
+    .card::after {
+      content: "";
+      position: absolute;
+      top: 10px; left: 10px;
+      width: 24px; height: 24px;
+      border-top: 2px solid var(--gold);
+      border-left: 2px solid var(--gold);
+      border-top-left-radius: 16px;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .corner-br {
+      position: absolute;
+      bottom: 10px; right: 10px;
+      width: 24px; height: 24px;
+      border-bottom: 2px solid var(--gold);
+      border-right: 2px solid var(--gold);
+      border-bottom-right-radius: 16px;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(14px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ---------- content ---------- */
     .eyebrow {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      color: var(--rose);
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
+      color: var(--gold);
+      font-size: clamp(0.58rem, 1.1vh, 0.7rem);
+      letter-spacing: 0.3em;
       font-weight: 600;
       text-transform: uppercase;
-      margin: 0 0 20px;
+      margin: 0 0 clamp(8px, 1.6vh, 16px);
     }
-
-    .eyebrow::before,
-    .eyebrow::after {
+    .eyebrow::before, .eyebrow::after {
       content: "✦";
-      font-size: 0.72rem;
-      opacity: 0.65;
+      font-size: 0.9em;
+      opacity: 0.9;
     }
 
     .ornament {
       display: block;
+      font-size: clamp(0.95rem, 2vh, 1.3rem);
       color: var(--rose);
-      font-size: 1.7rem;
-      margin: 0 0 10px;
-      opacity: 0.75;
       line-height: 1;
+      margin: 0 0 clamp(4px, 1vh, 10px);
+      opacity: 0.85;
+      filter: drop-shadow(0 2px 6px rgba(232, 90, 120, 0.3));
     }
 
     h1 {
       font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(1.9rem, 5.6vw, 2.9rem);
-      line-height: 1.15;
+      font-size: clamp(1.35rem, 4.2vh, 2.4rem);
       font-weight: 400;
-      letter-spacing: -0.03em;
-      margin: 0 auto 12px;
-      max-width: 420px;
-      color: #75454b;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      color: var(--rose-dark);
+      margin: 0 0 clamp(6px, 1.2vh, 12px);
     }
 
     .subtitle {
       font-family: Georgia, "Times New Roman", serif;
       font-style: italic;
       color: var(--muted);
-      font-size: clamp(0.95rem, 2.4vw, 1.05rem);
-      line-height: 1.6;
-      margin: 0 auto;
+      font-size: clamp(0.8rem, 1.7vh, 1rem);
+      line-height: 1.5;
+      margin: 0 auto clamp(8px, 1.6vh, 16px);
+      max-width: 360px;
     }
 
     .divider {
@@ -191,393 +291,335 @@
       justify-content: center;
       gap: 10px;
       color: var(--rose-soft);
-      font-size: 0.7rem;
-      margin: 22px auto;
-      opacity: 0.8;
+      font-size: 0.75rem;
+      margin: 0 auto clamp(8px, 1.6vh, 16px);
+      opacity: 0.9;
     }
-
-    .divider::before,
-    .divider::after {
+    .divider::before, .divider::after {
       content: "";
-      width: 34px;
+      width: clamp(24px, 5vw, 40px);
       height: 1px;
-      background: currentColor;
-      opacity: 0.6;
+      background: linear-gradient(90deg, transparent, var(--rose), transparent);
+    }
+    .divider .dot-orn {
+      color: var(--gold);
+      font-size: 0.85rem;
     }
 
     .message {
-      max-width: 340px;
-      margin: 0 auto 24px;
-      font-size: 0.95rem;
-      line-height: 1.75;
-      color: #806365;
-    }
-
-    /* ---------- Button zone: fixed size so layout never shifts ---------- */
-
-    /* The zone is now just a placeholder in the layout so the card keeps
-       its height. The button is fixed to the viewport and moves freely. */
-    .button-zone {
-      height: 92px;
-      width: 100%;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(0.82rem, 1.7vh, 1rem);
+      line-height: 1.6;
+      color: var(--text);
       max-width: 360px;
-      margin: 0 auto;
+      margin: 0 auto clamp(10px, 2vh, 22px);
+    }
+    .message em {
+      color: var(--rose);
+      font-style: italic;
+    }
+
+    /* ---------- button ---------- */
+    .btn-wrap {
       position: relative;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(6px, 1.2vh, 12px);
+      margin: 0 auto;
     }
 
-    .catch-button {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      min-height: 50px;
-      padding: 14px 26px;
-      border: 1px solid rgba(255, 255, 255, 0.32);
-      border-radius: 999px;
-      background: var(--rose);
-      color: white;
-      font-weight: 500;
-      letter-spacing: 0.01em;
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.25) inset,
-        0 10px 24px -8px rgba(179, 79, 97, 0.55);
+    .invite-btn {
+      appearance: none;
+      border: none;
       cursor: pointer;
-      white-space: nowrap;
-      touch-action: manipulation;
-      z-index: 10;
-      transition:
-        left 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
-        top 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
-        background 0.2s ease,
-        box-shadow 0.2s ease;
-    }
-
-    .catch-button:hover {
-      background: var(--rose-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(0.85rem, 1.8vh, 1rem);
+      letter-spacing: 0.01em;
+      padding: clamp(9px, 1.6vh, 16px) clamp(20px, 4vw, 32px);
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--rose-bright) 0%, var(--rose) 55%, var(--rose-dark) 100%);
+      color: #fff5f2;
       box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.25) inset,
-        0 14px 30px -8px rgba(179, 79, 97, 0.65);
+        0 1px 0 rgba(255, 255, 255, 0.35) inset,
+        0 -2px 0 rgba(0, 0, 0, 0.12) inset,
+        0 12px 28px -10px rgba(179, 79, 97, 0.65),
+        0 4px 12px -4px rgba(179, 79, 97, 0.4);
+      transition: transform 0.35s cubic-bezier(.2,.8,.3,1.2), box-shadow 0.25s ease, background 0.25s ease;
+      position: relative;
+      will-change: transform;
+    }
+    .invite-btn:hover {
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.35) inset,
+        0 -2px 0 rgba(0, 0, 0, 0.12) inset,
+        0 16px 34px -10px rgba(179, 79, 97, 0.75),
+        0 4px 14px -4px rgba(179, 79, 97, 0.5);
+    }
+    .invite-btn:focus-visible {
+      outline: 3px solid var(--rose-dark);
+      outline-offset: 6px;
     }
 
-    .catch-button:focus-visible {
-      outline: 3px solid #75454b;
-      outline-offset: 5px;
+    .invite-btn .heart-icon {
+      display: inline-block;
+      margin-right: 8px;
+      animation: beat 1.6s ease-in-out infinite;
+    }
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      20%      { transform: scale(1.15); }
+      40%      { transform: scale(1); }
+      60%      { transform: scale(1.1); }
     }
 
-    .hint {
-      margin: 14px 0 0;
-      color: #a78a88;
-      font-size: 0.78rem;
-      letter-spacing: 0.02em;
-      min-height: 1.2em;
-      transition: color 0.25s ease;
+    .note {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      color: var(--muted);
+      font-size: clamp(0.75rem, 1.5vh, 0.9rem);
+      min-height: 1.4em;
+      letter-spacing: 0.01em;
+      transition: opacity 0.25s ease;
     }
 
     .footer {
-      margin-top: 26px;
-      padding-top: 18px;
-      border-top: 1px solid rgba(179, 79, 97, 0.1);
-      color: #b09894;
-      font-size: 0.68rem;
-      letter-spacing: 0.14em;
+      margin-top: clamp(8px, 1.6vh, 16px);
+      padding-top: clamp(6px, 1.4vh, 14px);
+      border-top: 1px solid rgba(201, 162, 95, 0.25);
+      color: #b89898;
+      font-size: clamp(0.55rem, 1.1vh, 0.65rem);
+      letter-spacing: 0.2em;
       text-transform: uppercase;
     }
 
-    .success-mark {
-      display: none;
-      color: var(--rose);
-      font-size: 1.8rem;
-      margin: 0 0 8px;
-      line-height: 1;
-    }
-
-    .card.caught .success-mark {
-      display: block;
-      animation: appear 0.5s ease both;
-    }
-
-    .card.caught .catch-button {
-      background: #80575b;
-      cursor: default;
-    }
-
-    .card.caught .hint {
-      color: var(--rose-dark);
-    }
-
-    .card.caught .message {
-      margin-bottom: 14px;
-    }
-
-    @keyframes appear {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes float {
-      0%, 100% {
-        transform: translateY(0) rotate(-5deg);
-      }
-      50% {
-        transform: translateY(-10px) rotate(5deg);
-      }
+    @media (max-height: 560px) {
+      .eyebrow { display: none; }
+      .ornament { display: none; }
+      .footer { display: none; }
+      .subtitle { margin-bottom: 6px; }
     }
 
     @media (max-width: 480px) {
-      .page {
-        padding: 12px;
-      }
-
-      .card {
-        border-radius: 20px;
-      }
-
-      .heart-one {
-        left: 4%;
-        top: 6%;
-      }
-
-      .heart-two {
-        right: 4%;
-        top: 11%;
-      }
-
-      .heart-three {
-        left: 4%;
-        bottom: 6%;
-      }
-
-      .heart-four {
-        right: 4%;
-        bottom: 8%;
-      }
+      .card { border-radius: 18px; }
+      .card::before { inset: 8px; border-radius: 12px; }
+      .card::after { top: 8px; left: 8px; width: 18px; height: 18px; }
+      .corner-br { bottom: 8px; right: 8px; width: 18px; height: 18px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
+      .bg-orb, .heart, .petal, .card-wrap::before, .invite-btn .heart-icon {
+        animation: none !important;
+      }
+      .hearts, .petals { display: none; }
+      *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
         transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
-
 <body>
+
+  <div class="bg-orb a" aria-hidden="true"></div>
+  <div class="bg-orb b" aria-hidden="true"></div>
+  <div class="hearts" id="hearts" aria-hidden="true"></div>
+  <div class="petals" id="petals" aria-hidden="true"></div>
+
   <main class="page">
-    <span class="decoration heart-one" aria-hidden="true">♡</span>
-    <span class="decoration heart-two" aria-hidden="true">✧</span>
-    <span class="decoration heart-three" aria-hidden="true">♡</span>
-    <span class="decoration heart-four" aria-hidden="true">♡</span>
+    <div class="card-wrap">
+      <section class="card" id="card" aria-labelledby="title">
 
-    <section class="card" id="card" aria-labelledby="title">
-      <div class="eyebrow">A little something for you</div>
+        <div class="corner-br" aria-hidden="true"></div>
 
-      <span class="ornament" aria-hidden="true">❦</span>
+        <div class="eyebrow">An invitation</div>
 
-      <h1 id="title">A Beauty Beyond Compare</h1>
+        <span class="ornament" aria-hidden="true">❦</span>
 
-      <p class="subtitle">
-        Some things are worth discovering.
-      </p>
+        <h1 id="title">A Beauty Beyond Compare</h1>
 
-      <div class="divider" aria-hidden="true">✦</div>
+        <p class="subtitle">
+          Some things are worth discovering.
+        </p>
 
-      <p class="message" id="message">
-        I made a little something for you…
-        but first, you'll have to catch it. ♡
-      </p>
+        <div class="divider" aria-hidden="true">
+          <span class="dot-orn">✦</span>
+        </div>
 
-      <div class="success-mark" aria-hidden="true">♡</div>
+        <p class="message" id="message">
+          I made a little something for you…
+          <br>
+          but you'll have to come a little closer first. <em>♡</em>
+        </p>
 
-      <div class="button-zone" id="buttonZone">
-        <button
-          class="catch-button"
-          id="catchButton"
-          type="button"
-        >
-          Catch me if you can ♡
-        </button>
-      </div>
+        <div class="btn-wrap">
+          <button class="invite-btn" id="inviteBtn" type="button">
+            <span class="heart-icon" aria-hidden="true">♡</span>
+            <span class="label">I'm curious</span>
+          </button>
 
-      <p class="hint" id="hint" aria-live="polite">
-        A little curiosity never hurt anyone.
-      </p>
+          <p class="note" id="note" aria-live="polite"></p>
+        </div>
 
-      <div class="footer">
-        Made with a little curiosity &amp; care
-      </div>
-    </section>
+        <div class="footer">Made with care</div>
+
+      </section>
+    </div>
   </main>
 
   <script>
-    const card = document.getElementById("card");
-    const button = document.getElementById("catchButton");
-    const zone = document.getElementById("buttonZone");
-    const message = document.getElementById("message");
-    const hint = document.getElementById("hint");
+    (function () {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    );
+      const heartsLayer = document.getElementById("hearts");
+      const petalsLayer = document.getElementById("petals");
 
-    let dodges = 0;
-    const maxDodges = 4;
-    let caught = false;
-
-    /**
-     * Clamp a value between min and max.
-     * If the range is invalid (min > max, e.g. on a tiny viewport),
-     * returns the midpoint so the button stays centred and never escapes.
-     */
-    function clamp(value, min, max) {
-      if (min > max) return (min + max) / 2;
-      return Math.min(max, Math.max(min, value));
-    }
-
-    /**
-     * Compute the allowed range for the button's CENTRE so that its
-     * OUTER edge never crosses the viewport edge.
-     *
-     * EDGE is the breathing room we keep from each viewport edge.
-     * halfW/halfH are half the button's rendered size.
-     */
-    function getBounds() {
-      const btnW = button.offsetWidth;
-      const btnH = button.offsetHeight;
-
-      const EDGE = 24;
-      const halfW = btnW / 2;
-      const halfH = btnH / 2;
-
-      return {
-        minX: EDGE + halfW,
-        maxX: window.innerWidth - EDGE - halfW,
-        minY: EDGE + halfH,
-        maxY: window.innerHeight - EDGE - halfH
-      };
-    }
-
-    /**
-     * Force the button's current inline left/top back inside the
-     * allowed range. Called on every move AND on resize, so the
-     * button can never remain outside the viewport.
-     */
-    function keepInsideViewport() {
-      const b = getBounds();
-
-      // Read the current target position from the inline style
-      // (falling back to the rendered position).
-      const currentLeft = parseFloat(button.style.left) || 0;
-      const currentTop = parseFloat(button.style.top) || 0;
-
-      const safeLeft = clamp(currentLeft, b.minX, b.maxX);
-      const safeTop = clamp(currentTop, b.minY, b.maxY);
-
-      if (safeLeft !== currentLeft) {
-        button.style.left = `${safeLeft}px`;
+      const heartChars = ["♡", "♥", "❥", "❤"];
+      const heartCount = window.innerWidth < 600 ? 10 : 18;
+      for (let i = 0; i < heartCount; i++) {
+        const h = document.createElement("span");
+        h.className = "heart";
+        h.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+        h.style.left = Math.random() * 100 + "vw";
+        h.style.fontSize = 10 + Math.random() * 18 + "px";
+        const dur = 14 + Math.random() * 14;
+        h.style.animationDuration = dur + "s";
+        h.style.animationDelay = -Math.random() * dur + "s";
+        heartsLayer.appendChild(h);
       }
-      if (safeTop !== currentTop) {
-        button.style.top = `${safeTop}px`;
+
+      const petalCount = window.innerWidth < 600 ? 8 : 14;
+      for (let i = 0; i < petalCount; i++) {
+        const p = document.createElement("span");
+        p.className = "petal";
+        const size = 8 + Math.random() * 8;
+        p.style.width = size + "px";
+        p.style.height = size + "px";
+        p.style.left = Math.random() * 100 + "vw";
+        const dur = 12 + Math.random() * 10;
+        p.style.animationDuration = dur + "s";
+        p.style.animationDelay = -Math.random() * dur + "s";
+        petalsLayer.appendChild(p);
+      }
+    })();
+
+    const card   = document.getElementById("card");
+    const button = document.getElementById("inviteBtn");
+    const note   = document.getElementById("note");
+    const label  = button.querySelector(".label");
+
+    // Notes shown in order. The last one triggers the fade-to-black and redirect.
+    const NOTES = [
+      "almost…",
+      "ooh, so close.",
+      "you really want this, huh?",
+      "okay, okay — one more try.",
+      "fine. you win. ♡"
+    ];
+
+    // Timing: 3s between notes. After the final note: 5s hold before redirect.
+    const NOTE_INTERVAL = 3000;
+    const FINAL_HOLD    = 5000;
+
+    let noteIndex       = -1;
+    let caught          = false;
+    let sequenceStarted = false;
+    let advanceTimer    = null;
+    let pointerNear     = false;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    function setNote(text) {
+      note.style.opacity = "0";
+      setTimeout(() => {
+        note.textContent = text;
+        note.style.opacity = "1";
+      }, 180);
+    }
+
+    function advanceNote() {
+      if (caught) return;
+      if (advanceTimer) {
+        clearTimeout(advanceTimer);
+        advanceTimer = null;
+      }
+
+      noteIndex++;
+
+      if (noteIndex >= NOTES.length) return;
+
+      const isFinal = noteIndex === NOTES.length - 1;
+      setNote(NOTES[noteIndex]);
+
+      if (isFinal) {
+        beginFinalSequence();
+      } else {
+        advanceTimer = setTimeout(advanceNote, NOTE_INTERVAL);
       }
     }
 
-    function dodgeButton(event) {
-      // Touch users can tap the button normally.
-      if (event.pointerType !== "mouse") return;
+    function beginFinalSequence() {
+      caught = true;
+      button.style.pointerEvents = "none";
+      button.style.cursor = "default";
+      label.textContent = "See you on the other side…";
 
-      if (caught || reducedMotion.matches) return;
+      // Start the slow dim shortly after the final note appears.
+      // The transition itself takes 4.5s, so the fade is visibly gradual.
+      setTimeout(() => {
+        document.body.classList.add("fade-out");
+      }, 400);
 
-      if (dodges >= maxDodges) {
-        hint.textContent = "Okay, okay… I'll stay still now. ♡";
+      // Five seconds after the final note, hand off to the puzzle page.
+      setTimeout(() => {
+        window.location.href = "puzzle.html";
+      }, FINAL_HOLD);
+    }
+
+    function handleClick(e) {
+      if (caught) return;
+      e.preventDefault();
+
+      if (!sequenceStarted) {
+        sequenceStarted = true;
+        advanceNote();   // show the first note immediately
         return;
       }
 
-      const b = getBounds();
-      const progress = dodges / maxDodges;
-
-      // Pick a random point inside the safe range, then clamp once more
-      // as a belt-and-braces guarantee.
-      const rawX = b.minX + Math.random() * Math.max(0, b.maxX - b.minX);
-      const rawY = b.minY + Math.random() * Math.max(0, b.maxY - b.minY);
-
-      const x = clamp(rawX, b.minX, b.maxX);
-      const y = clamp(rawY, b.minY, b.maxY);
-
-      button.style.left = `${x}px`;
-      button.style.top = `${y}px`;
-
-      // Smooth, eased glide to the new spot.
-      button.style.transitionDuration =
-        `${0.8 + progress * 0.25}s`;
-      button.style.transitionTimingFunction =
-        "cubic-bezier(0.22, 0.61, 0.36, 1)";
-
-      dodges++;
-
-      if (dodges >= maxDodges) {
-        hint.textContent = "I'm running out of places to hide… ♡";
-      }
+      advanceNote();     // skip to the next note on each subsequent click
     }
 
-    function catchButton() {
-      if (caught) return;
+    button.addEventListener("click", handleClick);
 
-      caught = true;
-      card.classList.add("caught");
+    function lean(event) {
+      if (caught || reducedMotion.matches) return;
 
-      button.textContent = "You caught me! ♡";
-      button.setAttribute("aria-label", "You caught me!");
-      button.disabled = true;
+      const rect = button.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
 
-      button.style.position = "relative";
-      button.style.left = "auto";
-      button.style.top = "auto";
-      button.style.transform = "none";
-      button.style.transition = "background 0.2s ease";
-      button.style.cursor = "default";
+      const dx = cx - event.clientX;
+      const dy = cy - event.clientY;
+      const dist = Math.hypot(dx, dy);
 
-      zone.style.height = "auto";
-      zone.style.minHeight = "60px";
+      if (dist > 80) {
+        pointerNear = false;
+        button.style.transform = "translate(0, 0)";
+        return;
+      }
 
-      message.textContent =
-        "Okay, you caught me. ♡ Your little adventure is just beginning.";
-
-      hint.textContent = "Taking you to the next clue…";
-
-      // Hand off to the next page after a brief pause so she can read the message.
-      setTimeout(() => {
-        window.location.href = "puzzle.html";
-      }, 1400);
+      const strength = Math.min(1, (80 - dist) / 80);
+      const maxLean = 18;
+      const ox = (dx / (dist || 1)) * maxLean * strength;
+      const oy = (dy / (dist || 1)) * maxLean * strength;
+      button.style.transform = `translate(${ox}px, ${oy}px)`;
     }
 
-    button.addEventListener("pointerenter", dodgeButton);
-    button.addEventListener("click", catchButton);
-
-    // If the viewport shrinks while the button is out near an edge,
-    // pull it back in immediately.
-    window.addEventListener("resize", () => {
-      if (!caught) {
-        keepInsideViewport();
-      }
-    });
-
-    // Respect reduced-motion preferences by keeping the button still.
-    reducedMotion.addEventListener?.("change", () => {
-      if (reducedMotion.matches) {
-        button.style.left = "50%";
-        button.style.top = "50%";
-        button.style.transform = "translate(-50%, -50%)";
-      }
+    card.addEventListener("pointermove", lean);
+    card.addEventListener("pointerleave", () => {
+      pointerNear = false;
+      if (!caught) button.style.transform = "translate(0, 0)";
     });
   </script>
 </body>
