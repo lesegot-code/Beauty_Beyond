@@ -1,0 +1,19 @@
+# Dependency directories (never upload these; they are heavy and recreatable)
+node_modules/
+jspm_packages/
+
+# Build and output directories
+dist/
+build/
+coverage/
+
+# Environment variables and secrets (critical security risk if uploaded)
+.env
+.env.local
+
+# Operating system and editor logs
+.DS_Store
+Thumbs.db
+*.log
+
+*poem_starter*
