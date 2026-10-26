@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0b0d">
+  <title>Secure Channel — A Beauty Beyond Compare ♡</title>
+
+  <style>
+    :root {
+      --ink: #0d0b0d;
+      --ink-2: #171317;
+      --ink-3: #221b20;
+      --line: #3a2a30;
+      --glow: #ff5a72;
+      --glow-soft: rgba(255, 90, 114, 0.15);
+      --dim: #8d6f75;
+      --text-bright: #f2e3e5;
+      --mono: "SFMono-Regular", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255, 90, 114, 0.07), transparent 60%),
+        radial-gradient(ellipse 80% 70% at 50% 100%, rgba(255, 90, 114, 0.05), transparent 60%),
+        var(--ink);
+      color: var(--text-bright);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 90, 114, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 90, 114, 0.045) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+      z-index: 0;
+    }
+
+    .page {
+      height: 100%;
+      height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(14px, 3vw, 40px);
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .terminal {
+      width: 100%;
+      max-width: 540px;
+      background: linear-gradient(180deg, var(--ink-2), var(--ink-3));
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px 20px 26px;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+        0 30px 70px -30px rgba(0, 0, 0, 0.8);
+      font-family: var(--mono);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .term-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #3a2a30; }
+    .dot.red    { background: #a63248; }
+    .dot.yellow { background: #8a6f2e; }
+    .dot.green  { background: #2e6a3a; }
+    .term-bar .title {
+      margin-left: 8px;
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    .term-label {
+      color: var(--dim);
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .term-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--glow);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .pulse {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--glow);
+      box-shadow: 0 0 10px var(--glow);
+      animation: pulse 1.6s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    /* ---------- stage 2: cipher ---------- */
+    .cipher {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin: 4px 0 22px;
+      font-size: clamp(1.1rem, 3.6vw, 1.5rem);
+      letter-spacing: 0.04em;
+      color: var(--text-bright);
+    }
+    .cipher .num {
+      display: inline-block;
+      min-width: 2.2ch;
+      text-align: center;
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 90, 114, 0.05);
+      color: #ffd7dc;
+    }
+    .cipher .sep { color: #5b444a; margin: 0 2px; }
+
+    .input-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    input[type="text"] {
+      flex: 1 1 200px;
+      min-width: 0;
+      background: #0f0c0f;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--text-bright);
+      font-family: var(--mono);
+      font-size: 1rem;
+      padding: 13px 14px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    input[type="text"]:focus {
+      border-color: var(--glow);
+      box-shadow: 0 0 0 3px var(--glow-soft);
+    }
+    input.shake { animation: shake 0.4s ease; }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--glow);
+      background: rgba(255, 90, 114, 0.1);
+      color: #ffd7dc;
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      padding: 13px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s ease, box-shadow 0.2s ease;
+      white-space: nowrap;
+    }
+    .btn:hover { background: rgba(255, 90, 114, 0.2); box-shadow: 0 0 18px rgba(255,90,114,0.25); }
+    .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+    .term-hint {
+      margin-top: 16px;
+      color: var(--dim);
+      font-size: 0.78rem;
+      min-height: 1.4em;
+      font-style: italic;
+    }
+    .term-hint .key {
+      color: #ffd7dc;
+      font-style: normal;
+      letter-spacing: 0.04em;
+    }
+    .term-error {
+      color: #ff8a9b;
+      font-size: 0.78rem;
+      margin-top: 8px;
+      min-height: 1.2em;
+    }
+
+    /* ---------- stage 3: transformation ---------- */
+    .phrase {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(8px, 2vw, 16px);
+      flex-wrap: wrap;
+      font-family: var(--mono);
+      font-size: clamp(1.6rem, 7vw, 2.6rem);
+      letter-spacing: 0.06em;
+      margin: 26px 0 10px;
+      color: var(--text-bright);
+    }
+    .phrase .word.plain { color: #cfb8bd; }
+
+    .phrase .word.hate {
+      position: relative;
+      color: #ff8a9b;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px dashed rgba(255, 90, 114, 0.5);
+      transition: background 0.2s ease, box-shadow 0.2s ease;
+      user-select: none;
+    }
+    .phrase .word.hate:hover,
+    .phrase .word.hate:focus-visible {
+      background: rgba(255, 90, 114, 0.12);
+      box-shadow: 0 0 20px rgba(255, 90, 114, 0.25);
+      outline: none;
+    }
+
+    .phrase .word.solved {
+      color: #ff5a72;
+      text-shadow: 0 0 18px rgba(255, 90, 114, 0.6);
+      padding: 6px 12px;
+      border: 1px dashed transparent;
+      animation: loveIn 0.7s cubic-bezier(.2,.8,.3,1.2) both;
+    }
+
+    .word-note {
+      text-align: center;
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      margin: 6px 0 22px;
+      min-height: 1.4em;
+    }
+
+    .picker {
+      display: none;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 4px 0 22px;
+    }
+    .picker.show { display: flex; animation: appear 0.25s ease both; }
+
+    .picker .opt {
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      padding: 11px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #0f0c0f;
+      color: #cfb8bd;
+      cursor: pointer;
+      transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    }
+    .picker .opt:hover {
+      border-color: var(--glow);
+      color: #ffd7dc;
+      background: rgba(255, 90, 114, 0.08);
+    }
+
+    .success-banner {
+      text-align: center;
+      color: var(--glow);
+      font-family: var(--mono);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      margin-top: 18px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .success-banner.show { opacity: 1; }
+
+    /* stage visibility */
+    .stage { display: none; }
+    .stage.is-active { display: block; animation: appear 0.6s ease both; }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(0.85); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    @keyframes loveIn {
+      0%   { opacity: 0; transform: scale(0.6); filter: blur(4px); }
+      60%  { opacity: 1; transform: scale(1.15); filter: blur(0); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+
+    <!-- ---------- STAGE 2: CIPHER ---------- -->
+    <div class="terminal stage is-active" id="stage-cipher">
+      <div class="term-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="title">secure — channel 0x130</span>
+      </div>
+
+      <div class="term-status">
+        <span class="pulse" aria-hidden="true"></span>
+        encrypted transmission intercepted
+      </div>
+
+      <span class="term-label" id="cipherTitle">ciphertext</span>
+      <div class="cipher" aria-labelledby="cipherTitle">
+        <span class="num">9</span><span class="sep">·</span><span class="num">8</span><span class="sep">·</span><span class="num">1</span><span class="sep">·</span><span class="num">20</span><span class="sep">·</span><span class="num">5</span>
+        <span class="sep">/</span>
+        <span class="num">25</span><span class="sep">·</span><span class="num">15</span><span class="sep">·</span><span class="num">21</span>
+      </div>
+
+      <label class="term-label" for="cipherInput">decoded message</label>
+      <div class="input-row">
+        <input id="cipherInput" type="text" autocomplete="off" autocapitalize="characters"
+               spellcheck="false" placeholder="type it here…" aria-describedby="cipherHint">
+        <button class="btn" id="cipherSubmit" type="button">decrypt →</button>
+      </div>
+
+      <p class="term-hint" id="cipherHint" aria-live="polite"></p>
+      <p class="term-error" id="cipherError" aria-live="polite"></p>
+    </div>
+
+    <!-- ---------- STAGE 3: TRANSFORMATION ---------- -->
+    <div class="terminal stage" id="stage-transform">
+      <div class="term-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="title">secure — channel 0x130</span>
+      </div>
+
+      <div class="term-status" style="color:#cfb8bd;">
+        <span class="pulse" style="background:#cfb8bd; box-shadow:0 0 10px #cfb8bd;" aria-hidden="true"></span>
+        decoded — one word is still wrong
+      </div>
+
+      <span class="term-label">decoded message</span>
+
+      <div class="phrase" id="phrase">
+        <span class="word plain">I</span>
+        <span class="word hate" id="hateWord" tabindex="0" role="button"
+              aria-label="Tap to replace this word">HATE</span>
+        <span class="word plain">YOU</span>
+      </div>
+
+      <p class="word-note" id="wordNote">tap the word to change it.</p>
+
+      <div class="picker" id="picker" role="group" aria-label="Choose a word">
+        <button class="opt" data-word="LOVE" type="button">LOVE</button>
+        <button class="opt" data-word="MISS" type="button">MISS</button>
+        <button class="opt" data-word="LIKE" type="button">LIKE</button>
+      </div>
+
+      <div class="success-banner" id="successBanner">
+        access granted — redirecting…
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // ============================================================
+    // Utilities
+    // ============================================================
+    const $ = (id) => document.getElementById(id);
+
+    function showStage(id) {
+      document.querySelectorAll(".stage").forEach(el => el.classList.remove("is-active"));
+      $(id).classList.add("is-active");
+    }
+
+    // ============================================================
+    // STAGE 2 — cipher
+    // ============================================================
+    // A=1 … Z=26. "I HATE YOU" → 9 8 1 20 5 / 25 15 21
+    const CORRECT_ANSWER = "IHATEYOU";   // no spaces, uppercase
+    const cipherInput  = $("cipherInput");
+    const cipherSubmit = $("cipherSubmit");
+    const cipherHint   = $("cipherHint");
+    const cipherError  = $("cipherError");
+
+    // After 12s, reveal a gentle hint. No lockout, ever.
+    let hintTimer = setTimeout(() => {
+      cipherHint.innerHTML =
+        'hint: <span class="key">a = 1 · b = 2 · c = 3 … z = 26</span>';
+    }, 12000);
+
+    function normalise(str) {
+      return str.toUpperCase().replace(/[^A-Z]/g, "");
+    }
+
+    function submitCipher() {
+      const guess = normalise(cipherInput.value);
+
+      if (guess === CORRECT_ANSWER) {
+        cipherError.textContent = "";
+        cipherHint.textContent = "decrypted. unlocking next screen…";
+        cipherSubmit.disabled = true;
+        clearTimeout(hintTimer);
+
+        setTimeout(() => {
+          showStage("stage-transform");
+          // focus the hate word so keyboard users land in the right place
+          setTimeout(() => $("hateWord").focus(), 100);
+        }, 900);
+      } else {
+        cipherError.textContent = "access denied — try again.";
+        cipherInput.classList.remove("shake");
+        void cipherInput.offsetWidth;   // force reflow so the animation can replay
+        cipherInput.classList.add("shake");
+        cipherInput.select();
+      }
+    }
+
+    cipherSubmit.addEventListener("click", submitCipher);
+    cipherInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submitCipher();
+    });
+    cipherInput.addEventListener("input", () => {
+      cipherError.textContent = "";
+    });
+
+    // ============================================================
+    // STAGE 3 — transformation
+    // ============================================================
+    const hateWord     = $("hateWord");
+    const picker       = $("picker");
+    const wordNote     = $("wordNote");
+    const successBanner = $("successBanner");
+
+    function openPicker() {
+      picker.classList.add("show");
+      wordNote.textContent = "pick the word that fits.";
+    }
+
+    hateWord.addEventListener("click", openPicker);
+    hateWord.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openPicker();
+      }
+    });
+
+    picker.addEventListener("click", (e) => {
+      const btn = e.target.closest(".opt");
+      if (!btn) return;
+
+      const chosen = btn.dataset.word;
+
+      if (chosen === "LOVE") {
+        // Success: swap HATE → LOVE, glow, then go to the poem page.
+        hateWord.classList.remove("hate");
+        hateWord.classList.add("solved");
+        hateWord.textContent = "LOVE";
+        hateWord.removeAttribute("tabindex");
+        hateWord.setAttribute("aria-label", "LOVE");
+        hateWord.style.pointerEvents = "none";
+
+        picker.classList.remove("show");
+        wordNote.textContent = "";
+        successBanner.classList.add("show");
+
+        setTimeout(() => {
+          window.location.href = "poem.html";
+        }, 1800);
+      } else {
+        // Gentle: not the right word, try again.
+        wordNote.textContent = "not quite — try another word.";
+      }
+    });
+  </script>
+</body>
+</html>
