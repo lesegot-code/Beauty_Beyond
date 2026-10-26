@@ -44,7 +44,6 @@
        BACKGROUND — animated hacker environment
        ============================================================ */
 
-    /* faint moving grid */
     .bg-grid {
       position: fixed;
       inset: 0;
@@ -62,7 +61,6 @@
       100% { background-position: 44px 44px, 44px 44px; }
     }
 
-    /* scrolling ASCII/code stream columns behind the terminals */
     .bg-code {
       position: fixed;
       inset: 0;
@@ -91,7 +89,6 @@
       100% { transform: translateY(200%); }
     }
 
-    /* floating glowing dust particles */
     .bg-dust {
       position: fixed;
       inset: 0;
@@ -115,7 +112,6 @@
       100% { transform: translateY(-110vh) scale(1.1); opacity: 0; }
     }
 
-    /* scanline sweeping top → bottom */
     .bg-scan {
       position: fixed;
       inset: 0;
@@ -138,7 +134,6 @@
       100% { background-position: 0 100vh; }
     }
 
-    /* vignette */
     .bg-vignette {
       position: fixed;
       inset: 0;
@@ -229,6 +224,33 @@
       box-shadow: 0 0 10px var(--glow);
       animation: pulse 1.6s ease-in-out infinite;
       flex-shrink: 0;
+    }
+
+    /* ---------- back-to-start link (inside the terminal bar) ---------- */
+    .back-link {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-decoration: none;
+      padding: 3px 8px;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+      white-space: nowrap;
+    }
+    .back-link:hover,
+    .back-link:focus-visible {
+      color: #ffd7dc;
+      background: rgba(255, 90, 114, 0.10);
+      border-color: rgba(255, 90, 114, 0.25);
+      outline: none;
+    }
+    .back-link::before {
+      content: "← ";
+      opacity: 0.7;
     }
 
     /* ---------- stage 2: cipher ---------- */
@@ -408,7 +430,6 @@
     }
     .success-banner.show { opacity: 1; }
 
-    /* stage visibility */
     .stage { display: none; }
     .stage.is-active { display: block; }
 
@@ -432,6 +453,8 @@
     @media (max-width: 480px) {
       .bg-code { font-size: 10px; opacity: 0.7; }
       .terminal { padding: 18px 16px 22px; border-radius: 14px; }
+      .term-bar .title { font-size: 0.62rem; letter-spacing: 0.12em; }
+      .back-link { font-size: 0.6rem; padding: 2px 6px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -447,7 +470,6 @@
 </head>
 <body>
 
-  <!-- animated hacker environment -->
   <div class="bg-grid" aria-hidden="true"></div>
   <div class="bg-code" id="bgCode" aria-hidden="true"></div>
   <div class="bg-dust" id="bgDust" aria-hidden="true"></div>
@@ -461,6 +483,7 @@
       <div class="term-bar">
         <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
         <span class="title">secure — channel 0x130</span>
+        <a href="index.html" class="back-link" aria-label="Back to start">start</a>
       </div>
 
       <div class="term-status">
@@ -491,6 +514,7 @@
       <div class="term-bar">
         <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
         <span class="title">secure — channel 0x130</span>
+        <a href="index.html" class="back-link" aria-label="Back to start">start</a>
       </div>
 
       <div class="term-status" style="color:#cfb8bd;">
@@ -532,14 +556,9 @@
   </main>
 
   <script>
-    // ============================================================
-    // Animated background — code stream + dust particles
-    // ============================================================
     (function () {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-      // --- scrolling code columns ---
-      // Mix of hacker-ish characters and love-themed tokens.
       const codeChars = "01{}[]<>/\\|#$%&*+=~^0123456789abcdef<>?/:;";
       const loveTokens = ["LOVE", "♥", "♡", "ROSE", "XOXO", "LOVER", "HEART", "CUPID", "KISS"];
       const codeLayer = document.getElementById("bgCode");
@@ -550,7 +569,6 @@
         col.className = "code-col";
         col.style.left = (i / colCount * 100 + Math.random() * 3) + "%";
 
-        // build a column of ~40 lines mixing chars and occasional love tokens
         let text = "";
         const lines = 40;
         for (let j = 0; j < lines; j++) {
@@ -567,18 +585,15 @@
         }
         col.textContent = text;
 
-        const dur = 14 + Math.random() * 18;      // 14–32s per fall
+        const dur = 14 + Math.random() * 18;
         const delay = -Math.random() * dur;
         col.style.animationDuration = dur + "s";
         col.style.animationDelay = delay + "s";
-
-        // some columns brighter than others (depth)
         col.style.opacity = (0.35 + Math.random() * 0.65).toFixed(2);
 
         codeLayer.appendChild(col);
       }
 
-      // --- floating rose dust ---
       const dustLayer = document.getElementById("bgDust");
       const dustCount = window.innerWidth < 600 ? 22 : 40;
 
@@ -588,7 +603,7 @@
 
         const size = 1.5 + Math.random() * 2.5;
         const left = Math.random() * 100;
-        const dur = 8 + Math.random() * 10;       // 8–18s to rise
+        const dur = 8 + Math.random() * 10;
         const delay = -Math.random() * dur;
 
         d.style.width = size + "px";
@@ -602,9 +617,6 @@
       }
     })();
 
-    // ============================================================
-    // Utilities
-    // ============================================================
     const $ = (id) => document.getElementById(id);
 
     function showStage(id) {
@@ -612,9 +624,7 @@
       $(id).classList.add("is-active");
     }
 
-    // ============================================================
-    // STAGE 2 — cipher (Atbash)
-    // ============================================================
+    /* ---------- STAGE 2 — cipher (Atbash) ---------- */
     const CORRECT_ANSWER = "IHATEYOU";
     const cipherInput  = $("cipherInput");
     const cipherSubmit = $("cipherSubmit");
@@ -665,9 +675,7 @@
       cipherError.textContent = "";
     });
 
-    // ============================================================
-    // STAGE 3 — transformation
-    // ============================================================
+    /* ---------- STAGE 3 — transformation ---------- */
     const hateInput      = $("hateInput");
     const wordNote       = $("wordNote");
     const successBanner  = $("successBanner");
@@ -681,14 +689,12 @@
 
       const lines = syslog.querySelectorAll(".log-line");
       lines.forEach((line, i) => {
-        // 1 second between each line
         setTimeout(() => {
           line.classList.add("show");
           if (i === 1) line.classList.add("warn");
         }, 1000 + i * 1000);
       });
 
-      // focus the input after all three lines have had time to land
       setTimeout(() => {
         hateInput.focus();
         hateInput.select();

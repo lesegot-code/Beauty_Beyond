@@ -167,6 +167,31 @@
       100% { transform: translate3d(calc(var(--drift, 30px) * -0.6), 108vh, 0) rotate(360deg); opacity: 0; }
     }
 
+    /* ---------- start over link ---------- */
+    .start-over {
+      display: inline-block;
+      margin-top: 22px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: 0.88rem;
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.25s ease, border-color 0.25s ease;
+    }
+    .start-over:hover,
+    .start-over:focus-visible {
+      color: var(--rose);
+      border-color: var(--rose-soft);
+      outline: none;
+    }
+    .start-over::before {
+      content: "← ";
+      font-style: normal;
+      opacity: 0.7;
+      margin-right: 2px;
+    }
+
     /* ============================================================
        PAGE
        ============================================================ */
@@ -572,6 +597,9 @@
         <div class="poem-signature">
           <p class="line">Happy birthday.</p>
           <span class="heart" aria-hidden="true">♡</span>
+          <div>
+            <a href="index.html" class="start-over">read it again from the start</a>
+          </div>
         </div>
 
       </article>
