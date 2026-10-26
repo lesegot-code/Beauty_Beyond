@@ -20,6 +20,16 @@
       --text: #583b3e;
       --text-deep: #3a1f24;
       --muted: #977778;
+
+      --ink: #0d0b0d;
+      --ink-2: #171317;
+      --ink-3: #221b20;
+      --line: #3a2a30;
+      --glow: #ff5a72;
+      --glow-soft: rgba(255, 90, 114, 0.15);
+      --dim: #8d6f75;
+      --text-bright: #f2e3e5;
+      --mono: "SFMono-Regular", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
     }
 
     * { box-sizing: border-box; }
@@ -32,11 +42,6 @@
     }
 
     body {
-      background:
-        radial-gradient(ellipse 70% 60% at 12% 10%, rgba(241, 207, 205, 0.65), transparent 65%),
-        radial-gradient(ellipse 65% 60% at 88% 90%, rgba(235, 202, 194, 0.55), transparent 65%),
-        radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 245, 235, 0.6), transparent 70%),
-        linear-gradient(180deg, #fdf6f0 0%, var(--cream) 50%, var(--cream-deep) 100%);
       color: var(--text);
       font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
       -webkit-tap-highlight-color: transparent;
@@ -44,32 +49,301 @@
       position: relative;
     }
 
-    body::before {
+    .lock-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255, 90, 114, 0.10), transparent 60%),
+        radial-gradient(ellipse 80% 70% at 50% 100%, rgba(201, 65, 95, 0.08), transparent 60%),
+        var(--ink);
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(14px, 3vw, 40px);
+      transition: opacity 1.6s ease-in-out;
+      overflow: hidden;
+    }
+    .lock-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .lock-screen::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 90, 114, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 90, 114, 0.05) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+      pointer-events: none;
+    }
+
+    .terminal {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 540px;
+      max-height: calc(100dvh - 28px);
+      overflow-y: auto;
+      background: linear-gradient(180deg, var(--ink-2), var(--ink-3));
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px 20px 26px;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+        0 0 40px rgba(255, 90, 114, 0.08),
+        0 30px 70px -30px rgba(0, 0, 0, 0.9);
+      font-family: var(--mono);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      animation: terminalIn 0.7s cubic-bezier(.2,.7,.3,1) both;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 90, 114, 0.3) transparent;
+    }
+    .terminal::-webkit-scrollbar { width: 6px; }
+    .terminal::-webkit-scrollbar-thumb {
+      background: rgba(255, 90, 114, 0.25);
+      border-radius: 3px;
+    }
+    @keyframes terminalIn {
+      from { opacity: 0; transform: translateY(14px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .term-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #3a2a30; }
+    .dot.red    { background: #a63248; box-shadow: 0 0 6px rgba(166, 50, 72, 0.6); }
+    .dot.yellow { background: #8a6f2e; box-shadow: 0 0 6px rgba(138, 111, 46, 0.6); }
+    .dot.green  { background: #2e6a3a; box-shadow: 0 0 6px rgba(46, 106, 58, 0.6); }
+    .term-bar .title {
+      margin-left: 8px;
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    .term-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--glow);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .pulse {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--glow);
+      box-shadow: 0 0 10px var(--glow);
+      animation: pulse 1.6s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .term-label {
+      color: var(--dim);
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .joke {
+      font-size: 0.9rem;
+      color: #cfb8bd;
+      line-height: 1.7;
+      margin-bottom: 12px;
+      min-height: 3.4em;
+      transition: opacity 0.25s ease;
+    }
+
+    .riddle {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: 0.86rem;
+      color: #b89898;
+      line-height: 1.7;
+      margin-bottom: 22px;
+      letter-spacing: 0.01em;
+      min-height: 1.5em;
+    }
+    .riddle b {
+      color: #ffd7dc;
+      font-weight: 700;
+      font-style: italic;
+    }
+
+    .countdown {
+      display: flex;
+      gap: clamp(6px, 1.5vw, 14px);
+      justify-content: center;
+      margin: 24px 0 8px;
+      flex-wrap: wrap;
+    }
+    .cd-block { text-align: center; min-width: 56px; }
+    .cd-num {
+      display: block;
+      font-family: var(--mono);
+      font-size: clamp(1.6rem, 6vw, 2.4rem);
+      color: var(--glow);
+      text-shadow: 0 0 18px rgba(255, 90, 114, 0.5);
+      line-height: 1;
+    }
+    .cd-lbl {
+      display: block;
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-top: 6px;
+    }
+    .cd-sep {
+      color: var(--dim);
+      font-size: 1.6rem;
+      align-self: flex-start;
+      padding-top: 4px;
+      opacity: 0.5;
+    }
+
+    .time-note {
+      text-align: center;
+      font-size: 0.68rem;
+      color: var(--dim);
+      letter-spacing: 0.06em;
+      margin-bottom: 22px;
+    }
+    .time-note.error { color: #ff8a9b; }
+
+    .bypass {
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+      margin-top: 20px;
+    }
+    .bypass p {
+      font-size: 0.72rem;
+      color: var(--dim);
+      margin: 0 0 10px;
+      font-style: italic;
+    }
+    .bypass-row { display: flex; gap: 8px; }
+    .bypass input {
+      flex: 1;
+      min-width: 0;
+      background: #0f0c0f;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text-bright);
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      padding: 10px 12px;
+      outline: none;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .bypass input:focus {
+      border-color: var(--glow);
+      box-shadow: 0 0 0 3px var(--glow-soft);
+    }
+    .bypass button {
+      appearance: none;
+      border: 1px solid var(--glow);
+      background: rgba(255, 90, 114, 0.1);
+      color: #ffd7dc;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s ease;
+    }
+    .bypass button:hover { background: rgba(255, 90, 114, 0.2); }
+    .bypass-msg {
+      font-size: 0.75rem;
+      color: #ff8a9b;
+      margin-top: 8px;
+      min-height: 1.2em;
+    }
+
+    .unlock-flash {
+      text-align: center;
+      color: var(--glow);
+      font-family: var(--mono);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      margin-top: 18px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      text-shadow: 0 0 14px rgba(255, 90, 114, 0.7);
+    }
+    .unlock-flash.show { opacity: 1; }
+
+    .attribution {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 0.6rem;
+      color: #5b444a;
+      letter-spacing: 0.06em;
+    }
+    .attribution a { color: #8d6f75; text-decoration: none; }
+    .attribution a:hover { color: #cfb8bd; }
+
+    .site {
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 70% 60% at 12% 10%, rgba(241, 207, 205, 0.65), transparent 65%),
+        radial-gradient(ellipse 65% 60% at 88% 90%, rgba(235, 202, 194, 0.55), transparent 65%),
+        radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 245, 235, 0.6), transparent 70%),
+        linear-gradient(180deg, #fdf6f0 0%, var(--cream) 50%, var(--cream-deep) 100%);
+      display: none;
+    }
+    .site.visible { display: block; }
+
+    body::after {
       content: "";
       position: fixed;
       inset: 0;
+      background: radial-gradient(circle at 50% 50%, #fff8f1 0%, #fdf4ee 55%, #fbe6df 100%);
+      opacity: 0;
       pointer-events: none;
-      background: radial-gradient(circle at 50% 50%, transparent 55%, rgba(139, 90, 95, 0.10) 100%);
-      z-index: 1;
+      z-index: 999;
+      transition: opacity 3.5s ease-in-out;
     }
+    body.bloom::after { opacity: 1; }
 
-    /* ---------- final fade toward black before redirect ---------- */
-    body::after {
+    body::before {
       content: "";
       position: fixed;
       inset: 0;
       background: #0d0b0d;
       opacity: 0;
       pointer-events: none;
-      z-index: 999;
-      /* slowed to 4.5s so the dim is genuinely gradual */
+      z-index: 998;
       transition: opacity 4.5s ease-in-out;
     }
-    body.fade-out::after {
-      opacity: 0.92;
-    }
+    body.fade-out::before { opacity: 0.92; }
 
-    /* ---------- ambient background ---------- */
     .bg-orb {
       position: fixed;
       border-radius: 50%;
@@ -144,9 +418,8 @@
       100% { transform: translate3d(-15px, 110vh, 0) rotate(360deg); opacity: 0; }
     }
 
-    /* ---------- layout ---------- */
     .page {
-      height: 100vh;
+      height: 100%;
       height: 100dvh;
       display: flex;
       align-items: center;
@@ -182,7 +455,6 @@
       100% { opacity: 1;   transform: scale(1.04); }
     }
 
-    /* ---------- card ---------- */
     .card {
       position: relative;
       width: 100%;
@@ -200,7 +472,6 @@
       animation: cardIn 1s cubic-bezier(.2,.7,.3,1) both;
       overflow: hidden;
     }
-
     .card::before {
       content: "";
       position: absolute;
@@ -230,13 +501,11 @@
       opacity: 0.7;
       pointer-events: none;
     }
-
     @keyframes cardIn {
       from { opacity: 0; transform: translateY(14px) scale(0.98); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* ---------- content ---------- */
     .eyebrow {
       display: inline-flex;
       align-items: center;
@@ -254,7 +523,6 @@
       font-size: 0.9em;
       opacity: 0.9;
     }
-
     .ornament {
       display: block;
       font-size: clamp(0.95rem, 2vh, 1.3rem);
@@ -264,7 +532,6 @@
       opacity: 0.85;
       filter: drop-shadow(0 2px 6px rgba(232, 90, 120, 0.3));
     }
-
     h1 {
       font-family: Georgia, "Times New Roman", serif;
       font-size: clamp(1.35rem, 4.2vh, 2.4rem);
@@ -274,7 +541,6 @@
       color: var(--rose-dark);
       margin: 0 0 clamp(6px, 1.2vh, 12px);
     }
-
     .subtitle {
       font-family: Georgia, "Times New Roman", serif;
       font-style: italic;
@@ -284,7 +550,6 @@
       margin: 0 auto clamp(8px, 1.6vh, 16px);
       max-width: 360px;
     }
-
     .divider {
       display: flex;
       align-items: center;
@@ -301,11 +566,7 @@
       height: 1px;
       background: linear-gradient(90deg, transparent, var(--rose), transparent);
     }
-    .divider .dot-orn {
-      color: var(--gold);
-      font-size: 0.85rem;
-    }
-
+    .divider .dot-orn { color: var(--gold); font-size: 0.85rem; }
     .message {
       font-family: Georgia, "Times New Roman", serif;
       font-size: clamp(0.82rem, 1.7vh, 1rem);
@@ -314,12 +575,8 @@
       max-width: 360px;
       margin: 0 auto clamp(10px, 2vh, 22px);
     }
-    .message em {
-      color: var(--rose);
-      font-style: italic;
-    }
+    .message em { color: var(--rose); font-style: italic; }
 
-    /* ---------- button ---------- */
     .btn-wrap {
       position: relative;
       display: inline-flex;
@@ -328,7 +585,6 @@
       gap: clamp(6px, 1.2vh, 12px);
       margin: 0 auto;
     }
-
     .invite-btn {
       appearance: none;
       border: none;
@@ -356,11 +612,7 @@
         0 16px 34px -10px rgba(179, 79, 97, 0.75),
         0 4px 14px -4px rgba(179, 79, 97, 0.5);
     }
-    .invite-btn:focus-visible {
-      outline: 3px solid var(--rose-dark);
-      outline-offset: 6px;
-    }
-
+    .invite-btn:focus-visible { outline: 3px solid var(--rose-dark); outline-offset: 6px; }
     .invite-btn .heart-icon {
       display: inline-block;
       margin-right: 8px;
@@ -372,7 +624,6 @@
       40%      { transform: scale(1); }
       60%      { transform: scale(1.1); }
     }
-
     .note {
       font-family: Georgia, "Times New Roman", serif;
       font-style: italic;
@@ -382,7 +633,6 @@
       letter-spacing: 0.01em;
       transition: opacity 0.25s ease;
     }
-
     .footer {
       margin-top: clamp(8px, 1.6vh, 16px);
       padding-top: clamp(6px, 1.4vh, 14px);
@@ -393,11 +643,39 @@
       text-transform: uppercase;
     }
 
+    @media (max-height: 780px) {
+      .terminal { padding: 18px 18px 22px; }
+      .term-bar { margin-bottom: 12px; padding-bottom: 10px; }
+      .term-status { margin-bottom: 12px; font-size: 0.66rem; }
+      .joke { min-height: 2.8em; margin-bottom: 8px; font-size: 0.84rem; }
+      .riddle { margin-bottom: 14px; font-size: 0.8rem; line-height: 1.6; }
+      .countdown { margin: 16px 0 4px; }
+      .cd-num { font-size: clamp(1.4rem, 5vw, 2rem); }
+      .time-note { margin-bottom: 14px; }
+      .bypass { padding-top: 12px; margin-top: 12px; }
+      .attribution { margin-top: 12px; }
+    }
+
+    @media (max-height: 660px) {
+      .term-status { font-size: 0.6rem; letter-spacing: 0.1em; }
+      .term-label { margin-bottom: 6px; }
+      .joke { min-height: 2.4em; font-size: 0.78rem; line-height: 1.5; }
+      .riddle { font-size: 0.74rem; margin-bottom: 10px; line-height: 1.5; }
+      .cd-block { min-width: 42px; }
+      .cd-num { font-size: 1.3rem; }
+      .cd-lbl { font-size: 0.5rem; margin-top: 3px; }
+      .time-note { font-size: 0.6rem; }
+      .bypass p { font-size: 0.66rem; margin-bottom: 6px; }
+      .bypass input { padding: 8px 10px; font-size: 0.82rem; }
+      .bypass button { padding: 8px 12px; font-size: 0.75rem; }
+      .unlock-flash { margin-top: 10px; font-size: 0.7rem; }
+      .attribution { display: none; }
+    }
+
     @media (max-height: 560px) {
-      .eyebrow { display: none; }
-      .ornament { display: none; }
-      .footer { display: none; }
-      .subtitle { margin-bottom: 6px; }
+      .term-bar { display: none; }
+      .joke { min-height: 0; }
+      .countdown { margin: 10px 0 2px; }
     }
 
     @media (max-width: 480px) {
@@ -405,12 +683,14 @@
       .card::before { inset: 8px; border-radius: 12px; }
       .card::after { top: 8px; left: 8px; width: 18px; height: 18px; }
       .corner-br { bottom: 8px; right: 8px; width: 18px; height: 18px; }
+      .terminal { padding: 16px 14px 20px; border-radius: 14px; }
+      .term-bar .title { font-size: 0.62rem; }
+      .cd-block { min-width: 44px; }
+      .cd-num { font-size: 1.4rem; }
+      .cd-lbl { font-size: 0.52rem; }
     }
-
     @media (prefers-reduced-motion: reduce) {
-      .bg-orb, .heart, .petal, .card-wrap::before, .invite-btn .heart-icon {
-        animation: none !important;
-      }
+      .pulse, .bg-orb, .heart, .petal, .card-wrap::before, .invite-btn .heart-icon { animation: none !important; }
       .hearts, .petals { display: none; }
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -422,205 +702,513 @@
 </head>
 <body>
 
-  <div class="bg-orb a" aria-hidden="true"></div>
-  <div class="bg-orb b" aria-hidden="true"></div>
-  <div class="hearts" id="hearts" aria-hidden="true"></div>
-  <div class="petals" id="petals" aria-hidden="true"></div>
+  <div class="lock-screen" id="lockScreen">
+    <div class="terminal">
 
-  <main class="page">
-    <div class="card-wrap">
-      <section class="card" id="card" aria-labelledby="title">
+      <div class="term-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="title">secure — channel 0x130</span>
+      </div>
 
-        <div class="corner-br" aria-hidden="true"></div>
+      <div class="term-status">
+        <span class="pulse" aria-hidden="true"></span>
+        <span id="statusText">birthday protocol locked</span>
+      </div>
 
-        <div class="eyebrow">An invitation</div>
+      <div class="joke" id="joke">
+        access denied. you're early. very early.
+      </div>
 
-        <span class="ornament" aria-hidden="true">❦</span>
+      <div class="riddle" id="riddle">
+        Our first words came somewhere between <b>J</b>ust another day and <b>S</b>omething unexpected.
+      </div>
 
-        <h1 id="title">A Beauty Beyond Compare</h1>
+      <span class="term-label">unlock in</span>
+      <div class="countdown" id="countdown">
+        <div class="cd-block"><span class="cd-num" id="cdDays">--</span><span class="cd-lbl">days</span></div>
+        <span class="cd-sep">:</span>
+        <div class="cd-block"><span class="cd-num" id="cdHours">--</span><span class="cd-lbl">hrs</span></div>
+        <span class="cd-sep">:</span>
+        <div class="cd-block"><span class="cd-num" id="cdMins">--</span><span class="cd-lbl">min</span></div>
+        <span class="cd-sep">:</span>
+        <div class="cd-block"><span class="cd-num" id="cdSecs">--</span><span class="cd-lbl">sec</span></div>
+      </div>
+      <p class="time-note" id="timeNote">syncing with trusted time server…</p>
 
-        <p class="subtitle">
-          Some things are worth discovering.
-        </p>
+      <div class="unlock-flash" id="unlockFlash">protocol activated — welcome ♡</div>
 
-        <div class="divider" aria-hidden="true">
-          <span class="dot-orn">✦</span>
+      <div class="bypass">
+        <p>or, if you really can't wait…</p>
+        <div class="bypass-row">
+          <input id="bypassInput" type="text" placeholder="code" autocomplete="off" spellcheck="false" aria-label="Bypass code">
+          <button id="bypassBtn" type="button">override</button>
         </div>
+        <p class="bypass-msg" id="bypassMsg" aria-live="polite"></p>
+      </div>
 
-        <p class="message" id="message">
-          I made a little something for you…
-          <br>
-          but you'll have to come a little closer first. <em>♡</em>
-        </p>
+      <p class="attribution">
+        <a href="https://time.now" target="_blank" rel="noopener">World Time API by Time.Now</a>
+      </p>
 
-        <div class="btn-wrap">
-          <button class="invite-btn" id="inviteBtn" type="button">
-            <span class="heart-icon" aria-hidden="true">♡</span>
-            <span class="label">I'm curious</span>
-          </button>
-
-          <p class="note" id="note" aria-live="polite"></p>
-        </div>
-
-        <div class="footer">Made with care</div>
-
-      </section>
     </div>
-  </main>
+  </div>
+
+  <div class="site" id="site">
+    <div class="bg-orb a" aria-hidden="true"></div>
+    <div class="bg-orb b" aria-hidden="true"></div>
+    <div class="hearts" id="hearts" aria-hidden="true"></div>
+    <div class="petals" id="petals" aria-hidden="true"></div>
+
+    <main class="page">
+      <div class="card-wrap">
+        <section class="card" id="card" aria-labelledby="title">
+
+          <div class="corner-br" aria-hidden="true"></div>
+
+          <div class="eyebrow">An invitation</div>
+
+          <span class="ornament" aria-hidden="true">❦</span>
+
+          <h1 id="title">A Beauty Beyond Compare</h1>
+
+          <p class="subtitle">Some things are worth discovering.</p>
+
+          <div class="divider" aria-hidden="true">
+            <span class="dot-orn">✦</span>
+          </div>
+
+          <p class="message" id="message">
+            I made a little something for you…
+            <br>
+            but you'll have to come a little closer first. <em>♡</em>
+          </p>
+
+          <div class="btn-wrap">
+            <button class="invite-btn" id="inviteBtn" type="button">
+              <span class="heart-icon" aria-hidden="true">♡</span>
+              <span class="label">I'm curious</span>
+            </button>
+
+            <p class="note" id="note" aria-live="polite"></p>
+          </div>
+
+          <div class="footer">Made with care</div>
+
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Hidden notification form (submits silently to Formspree) -->
+  <form id="notifyForm" action="https://formspree.io/f/xppppoyj" method="POST" style="display:none;">
+    <input type="hidden" name="_subject" value="Beauty_Beyond: She solved the riddle!">
+    <input type="hidden" name="message" value="She entered AUGUST. The lock was bypassed at:">
+    <input type="hidden" name="timestamp" id="notifyTimestamp">
+  </form>
 
   <script>
-    (function () {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // ============================================================
+    // CONFIG — spelling preserved on purpose, do not correct
+    // ============================================================
+    const t4ARrGET_ISO  = "2026-11-01T00:00:00+02:00";  // midnight 1 Nov 2026, SAST
+    const t4rARGET_MS   = new Date(t4ARrGET_ISO).getTime();
+    const BiiPASS_k0uD  = "AUGUST";
 
-      const heartsLayer = document.getElementById("hearts");
-      const petalsLayer = document.getElementById("petals");
-
-      const heartChars = ["♡", "♥", "❥", "❤"];
-      const heartCount = window.innerWidth < 600 ? 10 : 18;
-      for (let i = 0; i < heartCount; i++) {
-        const h = document.createElement("span");
-        h.className = "heart";
-        h.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
-        h.style.left = Math.random() * 100 + "vw";
-        h.style.fontSize = 10 + Math.random() * 18 + "px";
-        const dur = 14 + Math.random() * 14;
-        h.style.animationDuration = dur + "s";
-        h.style.animationDelay = -Math.random() * dur + "s";
-        heartsLayer.appendChild(h);
-      }
-
-      const petalCount = window.innerWidth < 600 ? 8 : 14;
-      for (let i = 0; i < petalCount; i++) {
-        const p = document.createElement("span");
-        p.className = "petal";
-        const size = 8 + Math.random() * 8;
-        p.style.width = size + "px";
-        p.style.height = size + "px";
-        p.style.left = Math.random() * 100 + "vw";
-        const dur = 12 + Math.random() * 10;
-        p.style.animationDuration = dur + "s";
-        p.style.animationDelay = -Math.random() * dur + "s";
-        petalsLayer.appendChild(p);
-      }
-    })();
-
-    const card   = document.getElementById("card");
-    const button = document.getElementById("inviteBtn");
-    const note   = document.getElementById("note");
-    const label  = button.querySelector(".label");
-
-    // Notes shown in order. The last one triggers the fade-to-black and redirect.
-    const NOTES = [
-      "almost…",
-      "ooh, so close.",
-      "you really want this, huh?",
-      "okay, okay — one more try.",
-      "fine. you win. ♡"
+    const JOKES = [
+      "access denied. you're early. very early.",
+      "still early. the server is judging you.",
+      "you've tried again. the countdown hasn't moved. that's not how clocks work.",
+      "patience. the birthday protocol activates at midnight.",
+      "the lock is flattered by your persistence. it still won't open.",
+      "oh, you're back. i was beginning to miss your incorrect guesses.",
+      "denied again. at this point, we should probably call this a hobby.",
+      "you know what they say: patience is a virtue. apparently, not yours.",
+      "the password is not 'please'. adorable attempt, though.",
+      "i admire the confidence. the accuracy? we're still waiting on that.",
+      "another attempt. somewhere, a keyboard just sighed.",
+      "if persistence were the password, you'd have access by now.",
+      "the lock says no. the lock has boundaries. please respect them.",
+      "you keep knocking like this is a romantic comedy. it's a locked door.",
+      "honestly, if determination were attractive, you'd be dangerously close.",
+      "the lock has butterflies. unfortunately, they're not the kind that open doors.",
+      "you could try flowers. the server is emotionally unavailable.",
+      "your dedication is noted. your access request remains emotionally rejected.",
+      "it's not you. well, technically, it is. but the timing is also terrible.",
+      "one day, this lock will open for you. today is not that day. try being mysterious."
     ];
 
-    // Timing: 3s between notes. After the final note: 5s hold before redirect.
-    const NOTE_INTERVAL = 3000;
-    const FINAL_HOLD    = 5000;
+    const BLOCK_SIZE = 5;
 
-    let noteIndex       = -1;
-    let caught          = false;
-    let sequenceStarted = false;
-    let advanceTimer    = null;
-    let pointerNear     = false;
+    const $ = (id) => document.getElementById(id);
+    const lockScreen = $("lockScreen");
+    const site       = $("site");
+    const jokeEl     = $("joke");
+    const statusText = $("statusText");
+    const timeNote   = $("timeNote");
+    const unlockFlash = $("unlockFlash");
+    const bypassInput = $("bypassInput");
+    const bypassBtn   = $("bypassBtn");
+    const bypassMsg   = $("bypassMsg");
+    const cdDays  = $("cdDays");
+    const cdHours = $("cdHours");
+    const cdMins  = $("cdMins");
+    const cdSecs  = $("cdSecs");
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let serverOffsetMs = null;
+    let unlocked = false;
+    let tickInterval = null;
 
-    function setNote(text) {
-      note.style.opacity = "0";
-      setTimeout(() => {
-        note.textContent = text;
-        note.style.opacity = "1";
-      }, 180);
+    // ------------------------------------------------------------
+    // Joke rotation
+    // ------------------------------------------------------------
+    let visitCount = 1;
+    let currentBlock = 0;
+
+    function pickNewBlock(avoid) {
+      const totalBlocks = Math.ceil(JOKES.length / BLOCK_SIZE);
+      if (totalBlocks <= 1) return 0;
+      let n;
+      do { n = Math.floor(Math.random() * totalBlocks); } while (n === avoid);
+      return n;
     }
 
-    function advanceNote() {
-      if (caught) return;
-      if (advanceTimer) {
-        clearTimeout(advanceTimer);
-        advanceTimer = null;
+    function showJokeAtBlockOffset() {
+      const offset = (visitCount - 1) % BLOCK_SIZE;
+      const idx = (currentBlock * BLOCK_SIZE + offset) % JOKES.length;
+      jokeEl.style.opacity = "0";
+      setTimeout(() => {
+        jokeEl.textContent = JOKES[idx];
+        jokeEl.style.opacity = "1";
+      }, 160);
+    }
+
+    function saveJokeState() {
+      try {
+        localStorage.setItem("bb_visit", String(visitCount));
+        localStorage.setItem("bb_block", String(currentBlock));
+      } catch (e) {}
+    }
+
+    (function rotateJokeOnLoad() {
+      try {
+        visitCount = parseInt(localStorage.getItem("bb_visit") || "0", 10) + 1;
+        currentBlock = parseInt(localStorage.getItem("bb_block") || "0", 10);
+
+        if ((visitCount - 1) % BLOCK_SIZE === 0) {
+          currentBlock = pickNewBlock(currentBlock);
+        }
+
+        saveJokeState();
+      } catch (e) {
+        visitCount = 1;
+        currentBlock = 0;
       }
+      showJokeAtBlockOffset();
+    })();
 
-      noteIndex++;
-
-      if (noteIndex >= NOTES.length) return;
-
-      const isFinal = noteIndex === NOTES.length - 1;
-      setNote(NOTES[noteIndex]);
-
-      if (isFinal) {
-        beginFinalSequence();
+    function advanceJokeOnWrongAttempt() {
+      const offset = (visitCount - 1) % BLOCK_SIZE;
+      if (offset === BLOCK_SIZE - 1) {
+        currentBlock = pickNewBlock(currentBlock);
+        visitCount = 1;
       } else {
-        advanceTimer = setTimeout(advanceNote, NOTE_INTERVAL);
+        visitCount++;
+      }
+      saveJokeState();
+      showJokeAtBlockOffset();
+    }
+
+    // ------------------------------------------------------------
+    // Server time sync
+    // ------------------------------------------------------------
+    async function syncServerTime() {
+      try {
+        const res = await fetch(
+          "https://time.now/developer/api/time?timezone=Africa%2FJohannesburg",
+          { cache: "no-store" }
+        );
+        if (!res.ok) throw new Error("http " + res.status);
+        const data = await res.json();
+        const serverNow = new Date(data.datetime).getTime();
+        if (!Number.isFinite(serverNow)) throw new Error("bad datetime");
+
+        serverOffsetMs = serverNow - Date.now();
+        timeNote.textContent = "synced with trusted time server.";
+        timeNote.classList.remove("error");
+        return true;
+      } catch (err) {
+        timeNote.textContent =
+          "couldn't reach the time server — using your clock. no cheating.";
+        timeNote.classList.add("error");
+        serverOffsetMs = 0;
+        return false;
       }
     }
 
-    function beginFinalSequence() {
-      caught = true;
-      button.style.pointerEvents = "none";
-      button.style.cursor = "default";
-      label.textContent = "See you on the other side…";
+    function nowMs() {
+      return Date.now() + (serverOffsetMs || 0);
+    }
 
-      // Start the slow dim shortly after the final note appears.
-      // The transition itself takes 4.5s, so the fade is visibly gradual.
+    // ------------------------------------------------------------
+    // Countdown
+    // ------------------------------------------------------------
+    function tick() {
+      if (unlocked) return;
+      const remaining = t4rARGET_MS - nowMs();
+      if (remaining <= 0) { unlock(); return; }
+
+      const totalSec = Math.floor(remaining / 1000);
+      cdDays.textContent  = String(Math.floor(totalSec / 86400));
+      cdHours.textContent = String(Math.floor((totalSec % 86400) / 3600)).padStart(2, "0");
+      cdMins.textContent  = String(Math.floor((totalSec % 3600) / 60)).padStart(2, "0");
+      cdSecs.textContent  = String(totalSec % 60).padStart(2, "0");
+    }
+
+    function startCountdown() {
+      tick();
+      tickInterval = setInterval(tick, 1000);
+    }
+
+    // ------------------------------------------------------------
+    // Real unlock (only fires on/after the birthday)
+    // ------------------------------------------------------------
+    function unlock() {
+      if (unlocked) return;
+      unlocked = true;
+      if (tickInterval) clearInterval(tickInterval);
+
+      statusText.textContent = "birthday protocol activated";
+      unlockFlash.classList.add("show");
+
+      site.classList.add("visible");
+      document.body.classList.add("unlocked");
+
       setTimeout(() => {
-        document.body.classList.add("fade-out");
-      }, 400);
+        document.body.classList.add("bloom");
+      }, 900);
 
-      // Five seconds after the final note, hand off to the puzzle page.
       setTimeout(() => {
-        window.location.href = "puzzle.html";
-      }, FINAL_HOLD);
+        lockScreen.classList.add("hidden");
+      }, 5000);
+
+      setTimeout(() => {
+        document.body.classList.remove("bloom");
+      }, 6000);
+
+      setTimeout(() => {
+        initSiteInteractions();
+      }, 7200);
     }
 
-    function handleClick(e) {
-      if (caught) return;
-      e.preventDefault();
+    // ------------------------------------------------------------
+    // Notify owner + fake unlock
+    // ------------------------------------------------------------
+    function notifyOwnerAndFakeUnlock() {
+      // 1. Timestamp from the trusted clock, formatted in SAST
+      const now = new Date(nowMs());
+      $("notifyTimestamp").value = now.toLocaleString(
+        "en-ZA",
+        { timeZone: "Africa/Johannesburg" }
+      );
 
-      if (!sequenceStarted) {
-        sequenceStarted = true;
-        advanceNote();   // show the first note immediately
-        return;
+      // 2. Submit to Formspree silently
+      fetch($("notifyForm").action, {
+        method: "POST",
+        body: new FormData($("notifyForm")),
+        headers: { "Accept": "application/json" }
+      }).catch(() => { /* silent */ });
+
+      // 3. Fake the unlock for her eyes
+      statusText.textContent = "protocol activated";
+      unlockFlash.textContent = "welcome ♡ (loading...)";
+      unlockFlash.classList.add("show");
+
+      // 4. Flip to a fake error
+      setTimeout(() => {
+        unlockFlash.textContent =
+          "connection lost. the birthday protocol will activate at midnight.";
+        unlockFlash.style.color = "#ff8a9b";
+        statusText.textContent = "birthday protocol locked";
+        bypassMsg.textContent = "server unreachable. please try again.";
+        bypassInput.value = "";
+      }, 2500);
+    }
+
+    // ------------------------------------------------------------
+    // Bypass
+    // ------------------------------------------------------------
+    function tryBypass() {
+      const val = bypassInput.value.trim().toUpperCase();
+      if (val === BiiPASS_k0uD) {
+        bypassMsg.textContent = "";
+        notifyOwnerAndFakeUnlock();
+      } else {
+        bypassMsg.textContent = "override denied. nice try.";
+        bypassInput.select();
+        advanceJokeOnWrongAttempt();
       }
-
-      advanceNote();     // skip to the next note on each subsequent click
     }
-
-    button.addEventListener("click", handleClick);
-
-    function lean(event) {
-      if (caught || reducedMotion.matches) return;
-
-      const rect = button.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-
-      const dx = cx - event.clientX;
-      const dy = cy - event.clientY;
-      const dist = Math.hypot(dx, dy);
-
-      if (dist > 80) {
-        pointerNear = false;
-        button.style.transform = "translate(0, 0)";
-        return;
-      }
-
-      const strength = Math.min(1, (80 - dist) / 80);
-      const maxLean = 18;
-      const ox = (dx / (dist || 1)) * maxLean * strength;
-      const oy = (dy / (dist || 1)) * maxLean * strength;
-      button.style.transform = `translate(${ox}px, ${oy}px)`;
-    }
-
-    card.addEventListener("pointermove", lean);
-    card.addEventListener("pointerleave", () => {
-      pointerNear = false;
-      if (!caught) button.style.transform = "translate(0, 0)";
+    bypassBtn.addEventListener("click", tryBypass);
+    bypassInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") tryBypass();
     });
+    bypassInput.addEventListener("input", () => {
+      bypassMsg.textContent = "";
+    });
+
+    // ============================================================
+    // SITE INTERACTIONS (only after real unlock)
+    // ============================================================
+    let siteInitialised = false;
+    function initSiteInteractions() {
+      if (siteInitialised) return;
+      siteInitialised = true;
+
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const heartsLayer = document.getElementById("hearts");
+        const petalsLayer = document.getElementById("petals");
+
+        const heartChars = ["♡", "♥", "❥", "❤"];
+        const heartCount = window.innerWidth < 600 ? 10 : 18;
+        for (let i = 0; i < heartCount; i++) {
+          const h = document.createElement("span");
+          h.className = "heart";
+          h.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+          h.style.left = Math.random() * 100 + "vw";
+          h.style.fontSize = 10 + Math.random() * 18 + "px";
+          const dur = 14 + Math.random() * 14;
+          h.style.animationDuration = dur + "s";
+          h.style.animationDelay = -Math.random() * dur + "s";
+          heartsLayer.appendChild(h);
+        }
+
+        const petalCount = window.innerWidth < 600 ? 8 : 14;
+        for (let i = 0; i < petalCount; i++) {
+          const p = document.createElement("span");
+          p.className = "petal";
+          const size = 8 + Math.random() * 8;
+          p.style.width = size + "px";
+          p.style.height = size + "px";
+          p.style.left = Math.random() * 100 + "vw";
+          const dur = 12 + Math.random() * 10;
+          p.style.animationDuration = dur + "s";
+          p.style.animationDelay = -Math.random() * dur + "s";
+          petalsLayer.appendChild(p);
+        }
+      }
+
+      const card   = document.getElementById("card");
+      const button = document.getElementById("inviteBtn");
+      const note   = document.getElementById("note");
+      const label  = button.querySelector(".label");
+
+      const NOTES = [
+        "almost…",
+        "ooh, so close.",
+        "you really want this, huh?",
+        "okay, okay — one more try.",
+        "fine. you win. ♡"
+      ];
+
+      const NOTE_INTERVAL = 3000;
+      const FINAL_HOLD    = 5000;
+
+      let noteIndex = -1;
+      let caught = false;
+      let sequenceStarted = false;
+      let advanceTimer = null;
+      let pointerNear = false;
+
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+      function setNote(text) {
+        note.style.opacity = "0";
+        setTimeout(() => {
+          note.textContent = text;
+          note.style.opacity = "1";
+        }, 180);
+      }
+
+      function advanceNote() {
+        if (caught) return;
+        if (advanceTimer) { clearTimeout(advanceTimer); advanceTimer = null; }
+        noteIndex++;
+        if (noteIndex >= NOTES.length) return;
+        const isFinal = noteIndex === NOTES.length - 1;
+        setNote(NOTES[noteIndex]);
+        if (isFinal) {
+          beginFinalSequence();
+        } else {
+          advanceTimer = setTimeout(advanceNote, NOTE_INTERVAL);
+        }
+      }
+
+      function beginFinalSequence() {
+        caught = true;
+        button.style.pointerEvents = "none";
+        button.style.cursor = "default";
+        label.textContent = "See you on the other side…";
+
+        setTimeout(() => {
+          document.body.classList.add("fade-out");
+        }, 400);
+
+        setTimeout(() => {
+          window.location.href = "puzzle.html";
+        }, FINAL_HOLD);
+      }
+
+      function handleClick(e) {
+        if (caught) return;
+        e.preventDefault();
+        if (!sequenceStarted) {
+          sequenceStarted = true;
+          advanceNote();
+          return;
+        }
+        advanceNote();
+      }
+
+      button.addEventListener("click", handleClick);
+
+      function lean(event) {
+        if (caught || reducedMotion.matches) return;
+        const rect = button.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = cx - event.clientX;
+        const dy = cy - event.clientY;
+        const dist = Math.hypot(dx, dy);
+        if (dist > 80) {
+          pointerNear = false;
+          button.style.transform = "translate(0, 0)";
+          return;
+        }
+        const strength = Math.min(1, (80 - dist) / 80);
+        const maxLean = 18;
+        const ox = (dx / (dist || 1)) * maxLean * strength;
+        const oy = (dy / (dist || 1)) * maxLean * strength;
+        button.style.transform = `translate(${ox}px, ${oy}px)`;
+      }
+
+      card.addEventListener("pointermove", lean);
+      card.addEventListener("pointerleave", () => {
+        pointerNear = false;
+        if (!caught) button.style.transform = "translate(0, 0)";
+      });
+    }
+
+    // ============================================================
+    // Boot
+    // ============================================================
+    (async function boot() {
+      await syncServerTime();
+      if (nowMs() >= t4rARGET_MS) {
+        unlock();
+        return;
+      }
+      startCountdown();
+    })();
   </script>
 </body>
 </html>
