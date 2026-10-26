@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#fbf4ed">
+  <title>A Beauty Beyond Compare ♡</title>
+
+  <style>
+    :root {
+      --cream: #fbf4ed;
+      --blush: #f3dfdc;
+      --rose: #b34f61;
+      --rose-dark: #8e3548;
+      --rose-soft: #d9afb0;
+      --text: #583b3e;
+      --muted: #977778;
+      --white: #fffaf6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    /* ---------- No scrolling: lock the page to the viewport ---------- */
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    body {
+      background:
+        radial-gradient(
+          ellipse 60% 50% at 12% 12%,
+          rgba(241, 207, 205, 0.55),
+          transparent 70%
+        ),
+        radial-gradient(
+          ellipse 55% 50% at 90% 88%,
+          rgba(235, 202, 194, 0.45),
+          transparent 70%
+        ),
+        var(--cream);
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(
+        circle at 50% 50%,
+        transparent 55%,
+        rgba(111, 65, 66, 0.06) 100%
+      );
+      z-index: 2;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .page {
+      height: 100%;
+      height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(14px, 3vw, 40px);
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+    }
+
+    .decoration {
+      position: absolute;
+      z-index: 0;
+      color: rgba(179, 79, 97, 0.16);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .heart-one {
+      top: 10%;
+      left: 8%;
+      font-size: 30px;
+      animation: float 5s ease-in-out infinite;
+    }
+
+    .heart-two {
+      top: 20%;
+      right: 10%;
+      font-size: 20px;
+      animation: float 6s ease-in-out infinite reverse;
+    }
+
+    .heart-three {
+      bottom: 14%;
+      left: 14%;
+      font-size: 22px;
+      animation: float 5.5s ease-in-out infinite;
+    }
+
+    .heart-four {
+      bottom: 18%;
+      right: 8%;
+      font-size: 32px;
+      animation: float 6.5s ease-in-out infinite reverse;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 540px;
+      text-align: center;
+      padding: clamp(26px, 5vw, 46px) clamp(20px, 4.5vw, 40px) clamp(22px, 4vw, 36px);
+      background: linear-gradient(
+        180deg,
+        rgba(255, 250, 246, 0.94),
+        rgba(255, 248, 242, 0.88)
+      );
+      border: 1px solid rgba(179, 79, 97, 0.14);
+      border-radius: 26px;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.7) inset,
+        0 26px 60px -20px rgba(111, 65, 66, 0.22),
+        0 10px 24px -12px rgba(111, 65, 66, 0.12);
+      animation: appear 0.9s cubic-bezier(.2, .7, .3, 1) both;
+      position: relative;
+      z-index: 3;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--rose);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin: 0 0 20px;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      content: "✦";
+      font-size: 0.72rem;
+      opacity: 0.65;
+    }
+
+    .ornament {
+      display: block;
+      color: var(--rose);
+      font-size: 1.7rem;
+      margin: 0 0 10px;
+      opacity: 0.75;
+      line-height: 1;
+    }
+
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.9rem, 5.6vw, 2.9rem);
+      line-height: 1.15;
+      font-weight: 400;
+      letter-spacing: -0.03em;
+      margin: 0 auto 12px;
+      max-width: 420px;
+      color: #75454b;
+    }
+
+    .subtitle {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      color: var(--muted);
+      font-size: clamp(0.95rem, 2.4vw, 1.05rem);
+      line-height: 1.6;
+      margin: 0 auto;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--rose-soft);
+      font-size: 0.7rem;
+      margin: 22px auto;
+      opacity: 0.8;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      width: 34px;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.6;
+    }
+
+    .message {
+      max-width: 340px;
+      margin: 0 auto 24px;
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: #806365;
+    }
+
+    /* ---------- Button zone: fixed size so layout never shifts ---------- */
+
+    /* The zone is now just a placeholder in the layout so the card keeps
+       its height. The button is fixed to the viewport and moves freely. */
+    .button-zone {
+      height: 92px;
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .catch-button {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-height: 50px;
+      padding: 14px 26px;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      border-radius: 999px;
+      background: var(--rose);
+      color: white;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.25) inset,
+        0 10px 24px -8px rgba(179, 79, 97, 0.55);
+      cursor: pointer;
+      white-space: nowrap;
+      touch-action: manipulation;
+      z-index: 10;
+      transition:
+        left 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+        top 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .catch-button:hover {
+      background: var(--rose-dark);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.25) inset,
+        0 14px 30px -8px rgba(179, 79, 97, 0.65);
+    }
+
+    .catch-button:focus-visible {
+      outline: 3px solid #75454b;
+      outline-offset: 5px;
+    }
+
+    .hint {
+      margin: 14px 0 0;
+      color: #a78a88;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      min-height: 1.2em;
+      transition: color 0.25s ease;
+    }
+
+    .footer {
+      margin-top: 26px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(179, 79, 97, 0.1);
+      color: #b09894;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .success-mark {
+      display: none;
+      color: var(--rose);
+      font-size: 1.8rem;
+      margin: 0 0 8px;
+      line-height: 1;
+    }
+
+    .card.caught .success-mark {
+      display: block;
+      animation: appear 0.5s ease both;
+    }
+
+    .card.caught .catch-button {
+      background: #80575b;
+      cursor: default;
+    }
+
+    .card.caught .hint {
+      color: var(--rose-dark);
+    }
+
+    .card.caught .message {
+      margin-bottom: 14px;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(-5deg);
+      }
+      50% {
+        transform: translateY(-10px) rotate(5deg);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page {
+        padding: 12px;
+      }
+
+      .card {
+        border-radius: 20px;
+      }
+
+      .heart-one {
+        left: 4%;
+        top: 6%;
+      }
+
+      .heart-two {
+        right: 4%;
+        top: 11%;
+      }
+
+      .heart-three {
+        left: 4%;
+        bottom: 6%;
+      }
+
+      .heart-four {
+        right: 4%;
+        bottom: 8%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <span class="decoration heart-one" aria-hidden="true">♡</span>
+    <span class="decoration heart-two" aria-hidden="true">✧</span>
+    <span class="decoration heart-three" aria-hidden="true">♡</span>
+    <span class="decoration heart-four" aria-hidden="true">♡</span>
+
+    <section class="card" id="card" aria-labelledby="title">
+      <div class="eyebrow">A little something for you</div>
+
+      <span class="ornament" aria-hidden="true">❦</span>
+
+      <h1 id="title">A Beauty Beyond Compare</h1>
+
+      <p class="subtitle">
+        Some things are worth discovering.
+      </p>
+
+      <div class="divider" aria-hidden="true">✦</div>
+
+      <p class="message" id="message">
+        I made a little something for you…
+        but first, you'll have to catch it. ♡
+      </p>
+
+      <div class="success-mark" aria-hidden="true">♡</div>
+
+      <div class="button-zone" id="buttonZone">
+        <button
+          class="catch-button"
+          id="catchButton"
+          type="button"
+        >
+          Catch me if you can ♡
+        </button>
+      </div>
+
+      <p class="hint" id="hint" aria-live="polite">
+        A little curiosity never hurt anyone.
+      </p>
+
+      <div class="footer">
+        Made with a little curiosity &amp; care
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const card = document.getElementById("card");
+    const button = document.getElementById("catchButton");
+    const zone = document.getElementById("buttonZone");
+    const message = document.getElementById("message");
+    const hint = document.getElementById("hint");
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
+
+    let dodges = 0;
+    const maxDodges = 4;
+    let caught = false;
+
+    /**
+     * Clamp a value between min and max.
+     * If the range is invalid (min > max, e.g. on a tiny viewport),
+     * returns the midpoint so the button stays centred and never escapes.
+     */
+    function clamp(value, min, max) {
+      if (min > max) return (min + max) / 2;
+      return Math.min(max, Math.max(min, value));
+    }
+
+    /**
+     * Compute the allowed range for the button's CENTRE so that its
+     * OUTER edge never crosses the viewport edge.
+     *
+     * EDGE is the breathing room we keep from each viewport edge.
+     * halfW/halfH are half the button's rendered size.
+     */
+    function getBounds() {
+      const btnW = button.offsetWidth;
+      const btnH = button.offsetHeight;
+
+      const EDGE = 24;
+      const halfW = btnW / 2;
+      const halfH = btnH / 2;
+
+      return {
+        minX: EDGE + halfW,
+        maxX: window.innerWidth - EDGE - halfW,
+        minY: EDGE + halfH,
+        maxY: window.innerHeight - EDGE - halfH
+      };
+    }
+
+    /**
+     * Force the button's current inline left/top back inside the
+     * allowed range. Called on every move AND on resize, so the
+     * button can never remain outside the viewport.
+     */
+    function keepInsideViewport() {
+      const b = getBounds();
+
+      // Read the current target position from the inline style
+      // (falling back to the rendered position).
+      const currentLeft = parseFloat(button.style.left) || 0;
+      const currentTop = parseFloat(button.style.top) || 0;
+
+      const safeLeft = clamp(currentLeft, b.minX, b.maxX);
+      const safeTop = clamp(currentTop, b.minY, b.maxY);
+
+      if (safeLeft !== currentLeft) {
+        button.style.left = `${safeLeft}px`;
+      }
+      if (safeTop !== currentTop) {
+        button.style.top = `${safeTop}px`;
+      }
+    }
+
+    function dodgeButton(event) {
+      // Touch users can tap the button normally.
+      if (event.pointerType !== "mouse") return;
+
+      if (caught || reducedMotion.matches) return;
+
+      if (dodges >= maxDodges) {
+        hint.textContent = "Okay, okay… I'll stay still now. ♡";
+        return;
+      }
+
+      const b = getBounds();
+      const progress = dodges / maxDodges;
+
+      // Pick a random point inside the safe range, then clamp once more
+      // as a belt-and-braces guarantee.
+      const rawX = b.minX + Math.random() * Math.max(0, b.maxX - b.minX);
+      const rawY = b.minY + Math.random() * Math.max(0, b.maxY - b.minY);
+
+      const x = clamp(rawX, b.minX, b.maxX);
+      const y = clamp(rawY, b.minY, b.maxY);
+
+      button.style.left = `${x}px`;
+      button.style.top = `${y}px`;
+
+      // Smooth, eased glide to the new spot.
+      button.style.transitionDuration =
+        `${0.8 + progress * 0.25}s`;
+      button.style.transitionTimingFunction =
+        "cubic-bezier(0.22, 0.61, 0.36, 1)";
+
+      dodges++;
+
+      if (dodges >= maxDodges) {
+        hint.textContent = "I'm running out of places to hide… ♡";
+      }
+    }
+
+    function catchButton() {
+      if (caught) return;
+
+      caught = true;
+      card.classList.add("caught");
+
+      button.textContent = "You caught me! ♡";
+      button.setAttribute("aria-label", "You caught me!");
+      button.disabled = true;
+
+      button.style.position = "relative";
+      button.style.left = "auto";
+      button.style.top = "auto";
+      button.style.transform = "none";
+      button.style.transition = "background 0.2s ease";
+      button.style.cursor = "default";
+
+      zone.style.height = "auto";
+      zone.style.minHeight = "60px";
+
+      message.textContent =
+        "Okay, you caught me. ♡ Your little adventure is just beginning.";
+
+      hint.textContent = "Taking you to the next clue…";
+
+      // Hand off to the next page after a brief pause so she can read the message.
+      setTimeout(() => {
+        window.location.href = "puzzle.html";
+      }, 1400);
+    }
+
+    button.addEventListener("pointerenter", dodgeButton);
+    button.addEventListener("click", catchButton);
+
+    // If the viewport shrinks while the button is out near an edge,
+    // pull it back in immediately.
+    window.addEventListener("resize", () => {
+      if (!caught) {
+        keepInsideViewport();
+      }
+    });
+
+    // Respect reduced-motion preferences by keeping the button still.
+    reducedMotion.addEventListener?.("change", () => {
+      if (reducedMotion.matches) {
+        button.style.left = "50%";
+        button.style.top = "50%";
+        button.style.transform = "translate(-50%, -50%)";
+      }
+    });
+  </script>
+</body>
+</html>
