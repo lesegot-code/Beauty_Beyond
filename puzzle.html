@@ -14,6 +14,7 @@
       --line: #3a2a30;
       --glow: #ff5a72;
       --glow-soft: rgba(255, 90, 114, 0.15);
+      --rose: #c9415f;
       --dim: #8d6f75;
       --text-bright: #f2e3e5;
       --mono: "SFMono-Regular", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
@@ -29,29 +30,126 @@
 
     body {
       background:
-        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255, 90, 114, 0.07), transparent 60%),
-        radial-gradient(ellipse 80% 70% at 50% 100%, rgba(255, 90, 114, 0.05), transparent 60%),
+        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255, 90, 114, 0.10), transparent 60%),
+        radial-gradient(ellipse 80% 70% at 50% 100%, rgba(201, 65, 95, 0.08), transparent 60%),
         var(--ink);
       color: var(--text-bright);
       font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
       -webkit-tap-highlight-color: transparent;
       -webkit-font-smoothing: antialiased;
+      position: relative;
     }
 
-    body::before {
-      content: "";
+    /* ============================================================
+       BACKGROUND — animated hacker environment
+       ============================================================ */
+
+    /* faint moving grid */
+    .bg-grid {
       position: fixed;
       inset: 0;
-      background-image:
-        linear-gradient(rgba(255, 90, 114, 0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 90, 114, 0.045) 1px, transparent 1px);
-      background-size: 44px 44px;
-      pointer-events: none;
-      mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
-      -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
       z-index: 0;
+      background-image:
+        linear-gradient(rgba(255, 90, 114, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 90, 114, 0.06) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
+      animation: gridDrift 30s linear infinite;
+    }
+    @keyframes gridDrift {
+      0%   { background-position: 0 0, 0 0; }
+      100% { background-position: 44px 44px, 44px 44px; }
     }
 
+    /* scrolling ASCII/code stream columns behind the terminals */
+    .bg-code {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.35;
+      color: rgba(255, 90, 114, 0.09);
+      pointer-events: none;
+      user-select: none;
+      mask-image: linear-gradient(180deg, transparent 0%, black 20%, black 80%, transparent 100%);
+      -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 20%, black 80%, transparent 100%);
+    }
+    .code-col {
+      position: absolute;
+      top: -100%;
+      width: 14px;
+      text-align: center;
+      white-space: pre;
+      animation: codeFall linear infinite;
+      will-change: transform;
+    }
+    @keyframes codeFall {
+      0%   { transform: translateY(0); }
+      100% { transform: translateY(200%); }
+    }
+
+    /* floating glowing dust particles */
+    .bg-dust {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .dust {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--glow);
+      box-shadow: 0 0 8px var(--glow), 0 0 2px #fff;
+      opacity: 0;
+      animation: dustRise linear infinite;
+      will-change: transform, opacity;
+    }
+    @keyframes dustRise {
+      0%   { transform: translateY(0) scale(0.6); opacity: 0; }
+      15%  { opacity: 0.8; }
+      85%  { opacity: 0.5; }
+      100% { transform: translateY(-110vh) scale(1.1); opacity: 0; }
+    }
+
+    /* scanline sweeping top → bottom */
+    .bg-scan {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(180deg,
+        transparent 0%,
+        rgba(255, 90, 114, 0.04) 45%,
+        rgba(255, 90, 114, 0.08) 50%,
+        rgba(255, 90, 114, 0.04) 55%,
+        transparent 100%);
+      background-size: 100% 220px;
+      background-repeat: no-repeat;
+      animation: scanMove 7s linear infinite;
+      mix-blend-mode: screen;
+      opacity: 0.7;
+    }
+    @keyframes scanMove {
+      0%   { background-position: 0 -220px; }
+      100% { background-position: 0 100vh; }
+    }
+
+    /* vignette */
+    .bg-vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, transparent 45%, rgba(0, 0, 0, 0.65) 100%);
+    }
+
+    /* ============================================================
+       PAGE + TERMINALS
+       ============================================================ */
     .page {
       height: 100%;
       height: 100svh;
@@ -60,7 +158,7 @@
       justify-content: center;
       padding: clamp(14px, 3vw, 40px);
       position: relative;
-      z-index: 1;
+      z-index: 3;
       overflow: hidden;
     }
 
@@ -72,11 +170,18 @@
       border-radius: 16px;
       padding: 22px 20px 26px;
       box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.02) inset,
-        0 30px 70px -30px rgba(0, 0, 0, 0.8);
+        0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+        0 0 40px rgba(255, 90, 114, 0.08),
+        0 30px 70px -30px rgba(0, 0, 0, 0.9);
       font-family: var(--mono);
       font-size: 0.92rem;
       line-height: 1.6;
+      position: relative;
+      animation: terminalIn 0.7s cubic-bezier(.2,.7,.3,1) both;
+    }
+    @keyframes terminalIn {
+      from { opacity: 0; transform: translateY(14px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .term-bar {
@@ -88,9 +193,9 @@
       border-bottom: 1px solid var(--line);
     }
     .dot { width: 10px; height: 10px; border-radius: 50%; background: #3a2a30; }
-    .dot.red    { background: #a63248; }
-    .dot.yellow { background: #8a6f2e; }
-    .dot.green  { background: #2e6a3a; }
+    .dot.red    { background: #a63248; box-shadow: 0 0 6px rgba(166, 50, 72, 0.6); }
+    .dot.yellow { background: #8a6f2e; box-shadow: 0 0 6px rgba(138, 111, 46, 0.6); }
+    .dot.green  { background: #2e6a3a; box-shadow: 0 0 6px rgba(46, 106, 58, 0.6); }
     .term-bar .title {
       margin-left: 8px;
       font-size: 0.7rem;
@@ -146,6 +251,13 @@
       border-radius: 6px;
       background: rgba(255, 90, 114, 0.05);
       color: #ffd7dc;
+      animation: letterGlow 3s ease-in-out infinite;
+    }
+    .cipher .num:nth-child(2n)  { animation-delay: 0.3s; }
+    .cipher .num:nth-child(3n)  { animation-delay: 0.6s; }
+    @keyframes letterGlow {
+      0%, 100% { box-shadow: 0 0 0 rgba(255,90,114,0); }
+      50%      { box-shadow: 0 0 12px rgba(255,90,114,0.25); }
     }
     .cipher .sep { color: #5b444a; margin: 0 2px; }
 
@@ -183,10 +295,11 @@
       padding: 13px 20px;
       border-radius: 10px;
       cursor: pointer;
-      transition: background 0.2s ease, box-shadow 0.2s ease;
+      transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
       white-space: nowrap;
     }
-    .btn:hover { background: rgba(255, 90, 114, 0.2); box-shadow: 0 0 18px rgba(255,90,114,0.25); }
+    .btn:hover { background: rgba(255, 90, 114, 0.2); box-shadow: 0 0 18px rgba(255,90,114,0.35); }
+    .btn:active { transform: translateY(1px); }
     .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
 
     .term-hint {
@@ -208,7 +321,27 @@
       min-height: 1.2em;
     }
 
-    /* ---------- stage 3: transformation ---------- */
+    /* ---------- stage 3: syslog + editable word ---------- */
+    .syslog {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: #8d6f75;
+      line-height: 1.7;
+      margin: 0 0 4px;
+      min-height: 4.2em;
+    }
+    .syslog .log-line {
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .syslog .log-line.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .syslog .log-line.warn { color: #ffb3c0; }
+    .syslog .log-line.ok   { color: var(--glow); text-shadow: 0 0 10px rgba(255,90,114,0.5); }
+
     .phrase {
       display: flex;
       align-items: center;
@@ -218,33 +351,36 @@
       font-family: var(--mono);
       font-size: clamp(1.6rem, 7vw, 2.6rem);
       letter-spacing: 0.06em;
-      margin: 26px 0 10px;
+      margin: 16px 0 10px;
       color: var(--text-bright);
     }
     .phrase .word.plain { color: #cfb8bd; }
 
-    .phrase .word.hate {
-      position: relative;
-      color: #ff8a9b;
-      cursor: pointer;
-      padding: 6px 12px;
+    .phrase .word-input {
+      font-family: var(--mono);
+      font-size: inherit;
+      letter-spacing: inherit;
+      text-align: center;
+      width: 5.4ch;
+      padding: 6px 8px;
+      background: rgba(255, 90, 114, 0.08);
+      border: 1px dashed rgba(255, 90, 114, 0.6);
       border-radius: 8px;
-      border: 1px dashed rgba(255, 90, 114, 0.5);
-      transition: background 0.2s ease, box-shadow 0.2s ease;
-      user-select: none;
-    }
-    .phrase .word.hate:hover,
-    .phrase .word.hate:focus-visible {
-      background: rgba(255, 90, 114, 0.12);
-      box-shadow: 0 0 20px rgba(255, 90, 114, 0.25);
+      color: #ff8a9b;
       outline: none;
+      transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      text-transform: uppercase;
     }
-
-    .phrase .word.solved {
-      color: #ff5a72;
-      text-shadow: 0 0 18px rgba(255, 90, 114, 0.6);
-      padding: 6px 12px;
-      border: 1px dashed transparent;
+    .phrase .word-input:focus {
+      border-color: var(--glow);
+      background: rgba(255, 90, 114, 0.16);
+      box-shadow: 0 0 0 3px var(--glow-soft), 0 0 22px rgba(255,90,114,0.3);
+    }
+    .phrase .word-input.solved {
+      color: var(--glow);
+      border-color: transparent;
+      background: transparent;
+      text-shadow: 0 0 18px rgba(255, 90, 114, 0.7);
       animation: loveIn 0.7s cubic-bezier(.2,.8,.3,1.2) both;
     }
 
@@ -258,33 +394,6 @@
       min-height: 1.4em;
     }
 
-    .picker {
-      display: none;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin: 4px 0 22px;
-    }
-    .picker.show { display: flex; animation: appear 0.25s ease both; }
-
-    .picker .opt {
-      font-family: var(--mono);
-      font-size: 0.95rem;
-      letter-spacing: 0.08em;
-      padding: 11px 18px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: #0f0c0f;
-      color: #cfb8bd;
-      cursor: pointer;
-      transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
-    }
-    .picker .opt:hover {
-      border-color: var(--glow);
-      color: #ffd7dc;
-      background: rgba(255, 90, 114, 0.08);
-    }
-
     .success-banner {
       text-align: center;
       color: var(--glow);
@@ -295,17 +404,14 @@
       margin-top: 18px;
       opacity: 0;
       transition: opacity 0.4s ease;
+      text-shadow: 0 0 14px rgba(255,90,114,0.6);
     }
     .success-banner.show { opacity: 1; }
 
     /* stage visibility */
     .stage { display: none; }
-    .stage.is-active { display: block; animation: appear 0.6s ease both; }
+    .stage.is-active { display: block; }
 
-    @keyframes appear {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
       50%      { opacity: 0.5; transform: scale(0.85); }
@@ -323,7 +429,14 @@
       100% { opacity: 1; transform: scale(1); }
     }
 
+    @media (max-width: 480px) {
+      .bg-code { font-size: 10px; opacity: 0.7; }
+      .terminal { padding: 18px 16px 22px; border-radius: 14px; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
+      .bg-grid, .bg-scan, .dust, .code-col, .cipher .num { animation: none !important; }
+      .bg-code, .bg-dust, .bg-scan { display: none; }
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
@@ -333,6 +446,14 @@
   </style>
 </head>
 <body>
+
+  <!-- animated hacker environment -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-code" id="bgCode" aria-hidden="true"></div>
+  <div class="bg-dust" id="bgDust" aria-hidden="true"></div>
+  <div class="bg-scan" aria-hidden="true"></div>
+  <div class="bg-vignette" aria-hidden="true"></div>
+
   <main class="page">
 
     <!-- ---------- STAGE 2: CIPHER ---------- -->
@@ -347,11 +468,11 @@
         encrypted transmission intercepted
       </div>
 
-      <span class="term-label" id="cipherTitle">ciphertext</span>
+      <span class="term-label" id="cipherTitle">ciphertext — mirror cipher</span>
       <div class="cipher" aria-labelledby="cipherTitle">
-        <span class="num">9</span><span class="sep">·</span><span class="num">8</span><span class="sep">·</span><span class="num">1</span><span class="sep">·</span><span class="num">20</span><span class="sep">·</span><span class="num">5</span>
+        <span class="num">R</span><span class="sep">·</span><span class="num">S</span><span class="sep">·</span><span class="num">Z</span><span class="sep">·</span><span class="num">G</span><span class="sep">·</span><span class="num">V</span>
         <span class="sep">/</span>
-        <span class="num">25</span><span class="sep">·</span><span class="num">15</span><span class="sep">·</span><span class="num">21</span>
+        <span class="num">B</span><span class="sep">·</span><span class="num">L</span><span class="sep">·</span><span class="num">F</span>
       </div>
 
       <label class="term-label" for="cipherInput">decoded message</label>
@@ -377,22 +498,31 @@
         decoded — one word is still wrong
       </div>
 
-      <span class="term-label">decoded message</span>
+      <div class="syslog" id="syslog" aria-live="polite">
+        <div class="log-line" data-line="0">&gt; analysing message…</div>
+        <div class="log-line" data-line="1">&gt; warning: word 2 flagged as emotionally incorrect</div>
+        <div class="log-line" data-line="2">&gt; override required</div>
+      </div>
+
+      <span class="term-label" style="margin-top:22px;">decoded message</span>
 
       <div class="phrase" id="phrase">
         <span class="word plain">I</span>
-        <span class="word hate" id="hateWord" tabindex="0" role="button"
-              aria-label="Tap to replace this word">HATE</span>
+        <input
+          class="word-input"
+          id="hateInput"
+          type="text"
+          value="HATE"
+          autocomplete="off"
+          autocapitalize="characters"
+          spellcheck="false"
+          maxlength="6"
+          aria-label="The word that needs to change"
+        >
         <span class="word plain">YOU</span>
       </div>
 
-      <p class="word-note" id="wordNote">tap the word to change it.</p>
-
-      <div class="picker" id="picker" role="group" aria-label="Choose a word">
-        <button class="opt" data-word="LOVE" type="button">LOVE</button>
-        <button class="opt" data-word="MISS" type="button">MISS</button>
-        <button class="opt" data-word="LIKE" type="button">LIKE</button>
-      </div>
+      <p class="word-note" id="wordNote">type the word that belongs here.</p>
 
       <div class="success-banner" id="successBanner">
         access granted — redirecting…
@@ -402,6 +532,76 @@
   </main>
 
   <script>
+    // ============================================================
+    // Animated background — code stream + dust particles
+    // ============================================================
+    (function () {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      // --- scrolling code columns ---
+      // Mix of hacker-ish characters and love-themed tokens.
+      const codeChars = "01{}[]<>/\\|#$%&*+=~^0123456789abcdef<>?/:;";
+      const loveTokens = ["LOVE", "♥", "♡", "ROSE", "XOXO", "LOVER", "HEART", "CUPID", "KISS"];
+      const codeLayer = document.getElementById("bgCode");
+      const colCount = window.innerWidth < 600 ? 10 : 18;
+
+      for (let i = 0; i < colCount; i++) {
+        const col = document.createElement("div");
+        col.className = "code-col";
+        col.style.left = (i / colCount * 100 + Math.random() * 3) + "%";
+
+        // build a column of ~40 lines mixing chars and occasional love tokens
+        let text = "";
+        const lines = 40;
+        for (let j = 0; j < lines; j++) {
+          if (Math.random() < 0.08) {
+            text += loveTokens[Math.floor(Math.random() * loveTokens.length)] + "\n";
+          } else {
+            let line = "";
+            const len = 3 + Math.floor(Math.random() * 4);
+            for (let k = 0; k < len; k++) {
+              line += codeChars[Math.floor(Math.random() * codeChars.length)];
+            }
+            text += line + "\n";
+          }
+        }
+        col.textContent = text;
+
+        const dur = 14 + Math.random() * 18;      // 14–32s per fall
+        const delay = -Math.random() * dur;
+        col.style.animationDuration = dur + "s";
+        col.style.animationDelay = delay + "s";
+
+        // some columns brighter than others (depth)
+        col.style.opacity = (0.35 + Math.random() * 0.65).toFixed(2);
+
+        codeLayer.appendChild(col);
+      }
+
+      // --- floating rose dust ---
+      const dustLayer = document.getElementById("bgDust");
+      const dustCount = window.innerWidth < 600 ? 22 : 40;
+
+      for (let i = 0; i < dustCount; i++) {
+        const d = document.createElement("span");
+        d.className = "dust";
+
+        const size = 1.5 + Math.random() * 2.5;
+        const left = Math.random() * 100;
+        const dur = 8 + Math.random() * 10;       // 8–18s to rise
+        const delay = -Math.random() * dur;
+
+        d.style.width = size + "px";
+        d.style.height = size + "px";
+        d.style.left = left + "vw";
+        d.style.bottom = "-10px";
+        d.style.animationDuration = dur + "s";
+        d.style.animationDelay = delay + "s";
+
+        dustLayer.appendChild(d);
+      }
+    })();
+
     // ============================================================
     // Utilities
     // ============================================================
@@ -413,20 +613,23 @@
     }
 
     // ============================================================
-    // STAGE 2 — cipher
+    // STAGE 2 — cipher (Atbash)
     // ============================================================
-    // A=1 … Z=26. "I HATE YOU" → 9 8 1 20 5 / 25 15 21
-    const CORRECT_ANSWER = "IHATEYOU";   // no spaces, uppercase
+    const CORRECT_ANSWER = "IHATEYOU";
     const cipherInput  = $("cipherInput");
     const cipherSubmit = $("cipherSubmit");
     const cipherHint   = $("cipherHint");
     const cipherError  = $("cipherError");
 
-    // After 12s, reveal a gentle hint. No lockout, ever.
-    let hintTimer = setTimeout(() => {
+    let hint1Timer = setTimeout(() => {
       cipherHint.innerHTML =
-        'hint: <span class="key">a = 1 · b = 2 · c = 3 … z = 26</span>';
-    }, 12000);
+        'hint: <span class="key">the alphabet is mirrored — a ↔ z, b ↔ y, c ↔ x…</span>';
+    }, 15000);
+
+    let hint2Timer = setTimeout(() => {
+      cipherHint.innerHTML =
+        'hint: <span class="key">count in from both ends at once: a and z are a pair, b and y are a pair…</span>';
+    }, 35000);
 
     function normalise(str) {
       return str.toUpperCase().replace(/[^A-Z]/g, "");
@@ -439,17 +642,16 @@
         cipherError.textContent = "";
         cipherHint.textContent = "decrypted. unlocking next screen…";
         cipherSubmit.disabled = true;
-        clearTimeout(hintTimer);
+        clearTimeout(hint1Timer);
+        clearTimeout(hint2Timer);
 
         setTimeout(() => {
           showStage("stage-transform");
-          // focus the hate word so keyboard users land in the right place
-          setTimeout(() => $("hateWord").focus(), 100);
         }, 900);
       } else {
         cipherError.textContent = "access denied — try again.";
         cipherInput.classList.remove("shake");
-        void cipherInput.offsetWidth;   // force reflow so the animation can replay
+        void cipherInput.offsetWidth;
         cipherInput.classList.add("shake");
         cipherInput.select();
       }
@@ -466,49 +668,67 @@
     // ============================================================
     // STAGE 3 — transformation
     // ============================================================
-    const hateWord     = $("hateWord");
-    const picker       = $("picker");
-    const wordNote     = $("wordNote");
-    const successBanner = $("successBanner");
+    const hateInput      = $("hateInput");
+    const wordNote       = $("wordNote");
+    const successBanner  = $("successBanner");
+    const syslog         = $("syslog");
+    const transformStage = $("stage-transform");
 
-    function openPicker() {
-      picker.classList.add("show");
-      wordNote.textContent = "pick the word that fits.";
+    let syslogStarted = false;
+    function startSyslog() {
+      if (syslogStarted) return;
+      syslogStarted = true;
+
+      const lines = syslog.querySelectorAll(".log-line");
+      lines.forEach((line, i) => {
+        // 1 second between each line
+        setTimeout(() => {
+          line.classList.add("show");
+          if (i === 1) line.classList.add("warn");
+        }, 1000 + i * 1000);
+      });
+
+      // focus the input after all three lines have had time to land
+      setTimeout(() => {
+        hateInput.focus();
+        hateInput.select();
+      }, 3500);
     }
 
-    hateWord.addEventListener("click", openPicker);
-    hateWord.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        openPicker();
-      }
+    const observer = new MutationObserver(() => {
+      if (transformStage.classList.contains("is-active")) startSyslog();
     });
+    observer.observe(transformStage, { attributes: true, attributeFilter: ["class"] });
 
-    picker.addEventListener("click", (e) => {
-      const btn = e.target.closest(".opt");
-      if (!btn) return;
+    function checkTransformation() {
+      const value = hateInput.value.trim().toUpperCase();
 
-      const chosen = btn.dataset.word;
-
-      if (chosen === "LOVE") {
-        // Success: swap HATE → LOVE, glow, then go to the poem page.
-        hateWord.classList.remove("hate");
-        hateWord.classList.add("solved");
-        hateWord.textContent = "LOVE";
-        hateWord.removeAttribute("tabindex");
-        hateWord.setAttribute("aria-label", "LOVE");
-        hateWord.style.pointerEvents = "none";
-
-        picker.classList.remove("show");
+      if (value === "LOVE") {
+        hateInput.classList.add("solved");
+        hateInput.readOnly = true;
+        hateInput.blur();
         wordNote.textContent = "";
         successBanner.classList.add("show");
+
+        const ok = document.createElement("div");
+        ok.className = "log-line ok show";
+        ok.textContent = "> correction accepted.";
+        syslog.appendChild(ok);
 
         setTimeout(() => {
           window.location.href = "poem.html";
         }, 1800);
+      } else if (value === "HATE" || value === "") {
+        wordNote.textContent = "still the old word — try again.";
       } else {
-        // Gentle: not the right word, try again.
-        wordNote.textContent = "not quite — try another word.";
+        wordNote.textContent = "not quite — think about what the message should say.";
+      }
+    }
+
+    hateInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        checkTransformation();
       }
     });
   </script>
